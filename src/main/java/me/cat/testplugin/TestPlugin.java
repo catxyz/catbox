@@ -35,7 +35,7 @@ public class TestPlugin extends JavaPlugin implements Listener {
     }
 
     private void registerCommands() {
-        this.getServer().getCommandMap().register("magic", new Command("disableAbilities") {
+        this.getServer().getCommandMap().register("abstract", new Command("disableAbilities") {
             @Override
             public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
                 if (!(sender instanceof Player player)) return false;
@@ -52,13 +52,13 @@ public class TestPlugin extends JavaPlugin implements Listener {
             }
         });
 
-        this.getServer().getCommandMap().register("magic", new Command("giveCustomItem") {
+        this.getServer().getCommandMap().register("abstract", new Command("giveCustomItem") {
             @Override
             public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
                 if (!(sender instanceof Player player)) return false;
 
                 if (args.length > 1) {
-                    player.sendMessage(Component.text("usage -> /" + commandLabel + " <item_id>", NamedTextColor.RED));
+                    player.sendMessage(Component.text("Usage -> /" + commandLabel + " <item_id>", NamedTextColor.RED));
                     return false;
                 }
 
