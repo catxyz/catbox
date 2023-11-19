@@ -1,5 +1,6 @@
 package me.cat.testplugin;
 
+import me.cat.testplugin.abstractitems.manager.AbstractItemManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -12,35 +13,61 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 public class TestPlugin extends JavaPlugin implements Listener {
 
     private static TestPlugin INSTANCE;
+    private AbstractItemManager abstractItemManager;
     private boolean abilitiesDisabled = false;
 
     @Override
     public void onEnable() {
         INSTANCE = this;
 
-        Bukkit.getPluginManager().registerEvents(this, this);
-        Bukkit.getPluginManager().registerEvents(new SkullShootListener(), this);
+        this.abstractItemManager = new AbstractItemManager(this);
+        registerCommands();
 
-        this.getServer().getCommandMap().register("fallback", new Command("disableAbilities") {
+        Bukkit.getPluginManager().registerEvents(this, this);
+        //Bukkit.getPluginManager().registerEvents(new SkullShootListener(), this);
+    }
+
+    private void registerCommands() {
+        this.getServer().getCommandMap().register("magic", new Command("disableAbilities") {
             @Override
             public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
-                if (!(sender instanceof Player player)) {
-                    Bukkit.getServer().getLogger().info("Can't do that from here");
+                if (!(sender instanceof Player player)) return false;
+
+                if (!abilitiesDisabled()) {
+                    player.sendMessage(Component.text("Abilities disabled!", NamedTextColor.RED));
+                    setAbilitiesDisabled(true);
+                } else {
+                    player.sendMessage(Component.text("Abilities enabled!", NamedTextColor.GREEN));
+                    setAbilitiesDisabled(false);
+                }
+
+                return true;
+            }
+        });
+
+        this.getServer().getCommandMap().register("magic", new Command("giveCustomItem") {
+            @Override
+            public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
+                if (!(sender instanceof Player player)) return false;
+
+                if (args.length > 1) {
+                    player.sendMessage(Component.text("usage -> /" + commandLabel + " <item_id>", NamedTextColor.RED));
+                    return false;
+                }
+
+                ItemStack itemToGive = abstractItemManager.getMappedItemIdAndStack().get(args[0]);
+                if (itemToGive == null) {
+                    player.sendMessage(Component.text("Invalid item id!", NamedTextColor.RED));
                     return false;
                 } else {
-                    if (!abilitiesDisabled()) {
-                        player.sendMessage(Component.text("Abilities disabled!", NamedTextColor.RED));
-                        setAbilitiesDisabled(true);
-                    } else {
-                        player.sendMessage(Component.text("Abilities enabled!", NamedTextColor.GREEN));
-                        setAbilitiesDisabled(false);
-                    }
+                    player.getInventory().addItem(itemToGive);
                 }
 
                 return true;
@@ -71,6 +98,10 @@ public class TestPlugin extends JavaPlugin implements Listener {
 
     public static TestPlugin getInstance() {
         return INSTANCE;
+    }
+
+    public AbstractItemManager getAbstractItemManager() {
+        return abstractItemManager;
     }
 
     public boolean abilitiesDisabled() {

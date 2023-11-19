@@ -1,7 +1,7 @@
-package me.cat.testplugin.abstraction;
+package me.cat.testplugin.abstractitems.abstraction;
 
 public enum CustomDeathCause {
-    CUSTOM_ITEM("custom_item", "Magic Item"),
+    CUSTOM_ITEM("custom_item", "Custom Item"),
     NATURAL("natural_death", "Natural Death");
 
     private final String id;
