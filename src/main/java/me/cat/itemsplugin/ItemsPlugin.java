@@ -22,6 +22,8 @@ import java.util.List;
 public class ItemsPlugin extends JavaPlugin implements Listener {
 
     private static ItemsPlugin INSTANCE;
+    private static final String COMMAND_FALLBACK_PREFIX = "abstract";
+    private static final Component COMMAND_MISSING_PERMISSION_COMPONENT = Component.text("Missing permission!", NamedTextColor.RED);
     private AbstractItemManager abstractItemManager;
     private boolean abilitiesDisabled = false;
 
@@ -36,10 +38,11 @@ public class ItemsPlugin extends JavaPlugin implements Listener {
     }
 
     private void registerCommands() {
-        this.getServer().getCommandMap().register("abstract", new Command("disableAbilities") {
+        this.getServer().getCommandMap().register(COMMAND_FALLBACK_PREFIX, new Command("disableAbilities") {
             @Override
             public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
                 if (!(sender instanceof Player player)) return false;
+                if (!sender.isOp()) player.sendMessage(COMMAND_MISSING_PERMISSION_COMPONENT);
 
                 if (!abilitiesDisabled()) {
                     player.sendMessage(Component.text("Abilities disabled!", NamedTextColor.RED));
@@ -53,10 +56,11 @@ public class ItemsPlugin extends JavaPlugin implements Listener {
             }
         });
 
-        this.getServer().getCommandMap().register("abstract", new Command("giveCustomItem") {
+        this.getServer().getCommandMap().register(COMMAND_FALLBACK_PREFIX, new Command("giveCustomItem") {
             @Override
             public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
                 if (!(sender instanceof Player player)) return false;
+                if (!sender.isOp()) player.sendMessage(COMMAND_MISSING_PERMISSION_COMPONENT);
 
                 if (args.length != 1) {
                     player.sendMessage(Component.text("Usage -> /" + commandLabel + " <item_id>", NamedTextColor.RED));
