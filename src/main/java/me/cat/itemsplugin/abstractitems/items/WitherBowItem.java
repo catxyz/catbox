@@ -21,6 +21,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class WitherBowItem extends AbstractItem implements Listener {
 
@@ -60,11 +61,18 @@ public class WitherBowItem extends AbstractItem implements Listener {
                     event.getProjectile().remove();
 
                     player.getWorld().spawn(player.getEyeLocation(), WitherSkull.class, witherSkull -> {
+                        AtomicInteger atomicInteger = new AtomicInteger();
+
                         Bukkit.getServer().getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
+                            atomicInteger.getAndIncrement();
+
                             if (!witherSkull.isValid()) {
                                 task.cancel();
                             }
-                            witherSkull.addPassenger(player);
+                            if (atomicInteger.get() >= 4L) {
+                                witherSkull.remove();
+                                task.cancel();
+                            }
 
                             Location witherSkullLocation = witherSkull.getLocation().clone();
                             Vector vec = witherSkullLocation.getDirection();

@@ -42,7 +42,10 @@ public class ItemsPlugin extends JavaPlugin implements Listener {
             @Override
             public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
                 if (!(sender instanceof Player player)) return false;
-                if (!sender.isOp()) player.sendMessage(COMMAND_MISSING_PERMISSION_COMPONENT);
+                if (!sender.isOp()) {
+                    player.sendMessage(COMMAND_MISSING_PERMISSION_COMPONENT);
+                    return false;
+                }
 
                 if (!abilitiesDisabled()) {
                     player.sendMessage(Component.text("Abilities disabled!", NamedTextColor.RED));
@@ -60,7 +63,10 @@ public class ItemsPlugin extends JavaPlugin implements Listener {
             @Override
             public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
                 if (!(sender instanceof Player player)) return false;
-                if (!sender.isOp()) player.sendMessage(COMMAND_MISSING_PERMISSION_COMPONENT);
+                if (!sender.isOp()) {
+                    player.sendMessage(COMMAND_MISSING_PERMISSION_COMPONENT);
+                    return false;
+                }
 
                 if (args.length != 1) {
                     player.sendMessage(Component.text("Usage -> /" + commandLabel + " <item_id>", NamedTextColor.RED));
