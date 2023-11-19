@@ -1,4 +1,4 @@
-name: TestPlugin
-main: me.cat.testplugin.TestPlugin
+name: AbstractItems
+main: me.cat.abstractitems.AbstractItems
 version: 1.0
 api-version: 1.20

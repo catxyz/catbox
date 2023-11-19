@@ -1,6 +1,6 @@
-package me.cat.testplugin.abstractitems.items;
+package me.cat.abstractitems.abstractitems.items;
 
-import me.cat.testplugin.abstractitems.abstraction.AbstractItem;
+import me.cat.abstractitems.abstractitems.abstraction.AbstractItem;
 import org.bukkit.Material;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;

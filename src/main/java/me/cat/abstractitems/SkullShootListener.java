@@ -1,4 +1,4 @@
-package me.cat.testplugin;
+package me.cat.abstractitems;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -33,7 +33,7 @@ public class SkullShootListener implements Listener {
             return;
         }
 
-        if (TestPlugin.getInstance().abilitiesDisabled()) {
+        if (AbstractItems.getInstance().abilitiesDisabled()) {
             player.sendMessage(Component.text("This ability is currently disabled!", NamedTextColor.RED));
             return;
         }
@@ -54,7 +54,7 @@ public class SkullShootListener implements Listener {
                     armorStand.setVisible(false);
                     armorStand.getEquipment().setHelmet(new ItemStack(headColors.get(ThreadLocalRandom.current().nextInt(headColors.size()))));
 
-                    Bukkit.getScheduler().runTaskTimer(TestPlugin.getInstance(), (task) -> {
+                    Bukkit.getScheduler().runTaskTimer(AbstractItems.getInstance(), (task) -> {
                         if (!armorStand.isValid()) {
                             task.cancel();
                         }
@@ -69,7 +69,7 @@ public class SkullShootListener implements Listener {
                     runKillEntitiesAroundArmorStandTask(armorStand);
 
                     AtomicInteger armorStandSecondsToLive = new AtomicInteger();
-                    Bukkit.getScheduler().runTaskTimer(TestPlugin.getInstance(), (task) -> {
+                    Bukkit.getScheduler().runTaskTimer(AbstractItems.getInstance(), (task) -> {
                         if (!armorStand.isValid()) {
                             task.cancel();
                         }
@@ -87,7 +87,7 @@ public class SkullShootListener implements Listener {
     }
 
     private void spawnFireworkOnGroundHit(ArmorStand armorStand) {
-        Bukkit.getScheduler().runTaskTimer(TestPlugin.getInstance(), (task) -> {
+        Bukkit.getScheduler().runTaskTimer(AbstractItems.getInstance(), (task) -> {
             Location armorStandLocation = armorStand.getLocation();
 
             if (armorStandLocation.clone().subtract(0.0d, 0.1d, 0.0d).getBlock().getType() != Material.AIR) {
@@ -100,7 +100,7 @@ public class SkullShootListener implements Listener {
     }
 
     private void runKillEntitiesAroundArmorStandTask(ArmorStand armorStand) {
-        Bukkit.getScheduler().runTaskTimer(TestPlugin.getInstance(), (task) -> {
+        Bukkit.getScheduler().runTaskTimer(AbstractItems.getInstance(), (task) -> {
             if (!armorStand.isValid()) {
                 task.cancel();
             }

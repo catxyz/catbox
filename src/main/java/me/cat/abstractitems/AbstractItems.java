@@ -1,6 +1,6 @@
-package me.cat.testplugin;
+package me.cat.abstractitems;
 
-import me.cat.testplugin.abstractitems.manager.AbstractItemManager;
+import me.cat.abstractitems.abstractitems.manager.AbstractItemManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -17,9 +17,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-public class TestPlugin extends JavaPlugin implements Listener {
+public class AbstractItems extends JavaPlugin implements Listener {
 
-    private static TestPlugin INSTANCE;
+    private static AbstractItems INSTANCE;
     private AbstractItemManager abstractItemManager;
     private boolean abilitiesDisabled = false;
 
@@ -31,7 +31,6 @@ public class TestPlugin extends JavaPlugin implements Listener {
         registerCommands();
 
         Bukkit.getPluginManager().registerEvents(this, this);
-        //Bukkit.getPluginManager().registerEvents(new SkullShootListener(), this);
     }
 
     private void registerCommands() {
@@ -96,7 +95,7 @@ public class TestPlugin extends JavaPlugin implements Listener {
         this.abilitiesDisabled = abilitiesDisabled;
     }
 
-    public static TestPlugin getInstance() {
+    public static AbstractItems getInstance() {
         return INSTANCE;
     }
 

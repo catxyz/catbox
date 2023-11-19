@@ -1,7 +1,7 @@
-package me.cat.testplugin.abstractitems.manager;
+package me.cat.abstractitems.abstractitems.manager;
 
-import me.cat.testplugin.TestPlugin;
-import me.cat.testplugin.abstractitems.abstraction.AbstractItem;
+import me.cat.abstractitems.AbstractItems;
+import me.cat.abstractitems.abstractitems.abstraction.AbstractItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
@@ -49,7 +49,7 @@ public class ItemUseListener implements Listener {
                             String currentItemId = pdc.get(AbstractItem.CUSTOM_ITEM_ID_TAG, PersistentDataType.STRING);
 
                             if (Objects.equals(builder.getItemId(), currentItemId)) {
-                                if (TestPlugin.getInstance().abilitiesDisabled()) {
+                                if (AbstractItems.getInstance().abilitiesDisabled()) {
                                     player.sendMessage(Component.text("This ability is currently disabled!", NamedTextColor.RED));
                                     return;
                                 }

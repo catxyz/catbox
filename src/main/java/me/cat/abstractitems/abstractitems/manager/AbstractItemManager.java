@@ -1,10 +1,10 @@
-package me.cat.testplugin.abstractitems.manager;
+package me.cat.abstractitems.abstractitems.manager;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import me.cat.testplugin.TestPlugin;
-import me.cat.testplugin.abstractitems.abstraction.AbstractItem;
-import me.cat.testplugin.abstractitems.items.TestItem;
+import me.cat.abstractitems.AbstractItems;
+import me.cat.abstractitems.abstractitems.abstraction.AbstractItem;
+import me.cat.abstractitems.abstractitems.items.TestItem;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -19,7 +19,7 @@ public class AbstractItemManager {
     private final List<AbstractItem> registeredItems;
     private final Map<String, ItemStack> mappedItemIdAndStack;
 
-    public AbstractItemManager(TestPlugin plugin) {
+    public AbstractItemManager(AbstractItems plugin) {
         this.registeredItems = Lists.newArrayList();
         this.mappedItemIdAndStack = Maps.newHashMap();
 

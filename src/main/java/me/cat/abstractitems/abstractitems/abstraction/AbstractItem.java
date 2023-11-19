@@ -1,7 +1,7 @@
-package me.cat.testplugin.abstractitems.abstraction;
+package me.cat.abstractitems.abstractitems.abstraction;
 
 import com.google.common.base.Preconditions;
-import me.cat.testplugin.TestPlugin;
+import me.cat.abstractitems.AbstractItems;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.block.Action;
@@ -16,11 +16,11 @@ public abstract class AbstractItem {
 
     public static final NamespacedKey IS_CUSTOM_ITEM_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
             "is_custom_item",
-            TestPlugin.getInstance()
+            AbstractItems.getInstance()
     ));
     public static final NamespacedKey CUSTOM_ITEM_ID_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
             "custom_item_id",
-            TestPlugin.getInstance()
+            AbstractItems.getInstance()
     ));
     private final AbstractItemBuilder builder;
 

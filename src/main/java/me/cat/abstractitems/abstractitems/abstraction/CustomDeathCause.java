@@ -1,4 +1,4 @@
-package me.cat.testplugin.abstractitems.abstraction;
+package me.cat.abstractitems.abstractitems.abstraction;
 
 public enum CustomDeathCause {
     CUSTOM_ITEM("custom_item", "Custom Item"),
