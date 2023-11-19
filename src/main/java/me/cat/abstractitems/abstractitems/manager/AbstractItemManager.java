@@ -48,7 +48,9 @@ public class AbstractItemManager {
     public void addAbstractItem(AbstractItem abstractItem) {
         if (!isItemRegistered(abstractItem)) {
             registeredItems.add(abstractItem);
-            Bukkit.getServer().getLogger().info("Abstract item '" + abstractItem.getBuilder().getItemId() + "' registered!");
+            Bukkit.getServer()
+                    .getLogger()
+                    .info("Abstract item '" + abstractItem.getBuilder().getItemId() + "' registered!");
         }
     }
 

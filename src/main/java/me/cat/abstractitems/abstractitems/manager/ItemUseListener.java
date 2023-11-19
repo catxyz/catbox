@@ -34,31 +34,31 @@ public class ItemUseListener implements Listener {
             return;
         }
 
-        Optional<AbstractItem> abstractItem = abstractItemManager.getItemByMaterial(event.getMaterial());
-        abstractItem.ifPresentOrElse(item -> {
-            AbstractItem.AbstractItemBuilder builder = item.getBuilder();
+        PersistentDataContainer pdc = currentItem.getItemMeta()
+                .getPersistentDataContainer();
+        if (pdc.has(AbstractItem.IS_CUSTOM_ITEM_TAG) && pdc.has(AbstractItem.CUSTOM_ITEM_ID_TAG)) {
+            Boolean isCustomItem = pdc.get(AbstractItem.IS_CUSTOM_ITEM_TAG, PersistentDataType.BOOLEAN);
+            if (Boolean.TRUE.equals(isCustomItem)) {
+                String currentItemId = pdc.get(AbstractItem.CUSTOM_ITEM_ID_TAG, PersistentDataType.STRING);
 
-            if (builder.getUseActions().contains(currentAction)) {
-                if (builder.getMaterial() == currentItem.getType()) {
-                    PersistentDataContainer pdc = currentItem.getItemMeta()
-                            .getPersistentDataContainer();
+                Optional<AbstractItem> abstractItem = abstractItemManager.getItemById(currentItemId);
+                abstractItem.ifPresentOrElse(item -> {
+                    AbstractItem.AbstractItemBuilder builder = item.getBuilder();
 
-                    if (pdc.has(AbstractItem.IS_CUSTOM_ITEM_TAG) && pdc.has(AbstractItem.CUSTOM_ITEM_ID_TAG)) {
-                        Boolean isCustomItem = pdc.get(AbstractItem.IS_CUSTOM_ITEM_TAG, PersistentDataType.BOOLEAN);
-                        if (Boolean.TRUE.equals(isCustomItem)) {
-                            String currentItemId = pdc.get(AbstractItem.CUSTOM_ITEM_ID_TAG, PersistentDataType.STRING);
-
+                    if (builder.getUseActions().contains(currentAction)) {
+                        if (builder.getMaterial() == currentItem.getType()) {
                             if (Objects.equals(builder.getItemId(), currentItemId)) {
                                 if (AbstractItems.getInstance().abilitiesDisabled()) {
                                     player.sendMessage(Component.text("This ability is currently disabled!", NamedTextColor.RED));
+                                    event.setCancelled(true);
                                     return;
                                 }
                                 item.useItemInteraction(event);
                             }
                         }
                     }
-                }
+                }, () -> player.sendMessage(Component.text("This item wasn't found!", NamedTextColor.RED)));
             }
-        }, () -> player.sendMessage(Component.text("This item wasn't found!", NamedTextColor.RED)));
+        }
     }
 }
