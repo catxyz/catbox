@@ -1,12 +1,13 @@
-package me.cat.abstractitems.abstractitems.manager;
+package me.cat.itemsplugin.abstractitems.manager;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import me.cat.abstractitems.AbstractItems;
-import me.cat.abstractitems.abstractitems.abstraction.AbstractItem;
-import me.cat.abstractitems.abstractitems.items.TestItem;
-import org.bukkit.Bukkit;
+import me.cat.itemsplugin.ItemsPlugin;
+import me.cat.itemsplugin.abstractitems.abstraction.AbstractItem;
+import me.cat.itemsplugin.abstractitems.items.ColorfulStaffItem;
+import me.cat.itemsplugin.abstractitems.items.WitherBowItem;
 import org.bukkit.Material;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
@@ -16,10 +17,13 @@ import java.util.Optional;
 
 public class AbstractItemManager {
 
+    private final ItemsPlugin plugin;
     private final List<AbstractItem> registeredItems;
     private final Map<String, ItemStack> mappedItemIdAndStack;
 
-    public AbstractItemManager(AbstractItems plugin) {
+    public AbstractItemManager(ItemsPlugin plugin) {
+        this.plugin = plugin;
+
         this.registeredItems = Lists.newArrayList();
         this.mappedItemIdAndStack = Maps.newHashMap();
 
@@ -32,7 +36,8 @@ public class AbstractItemManager {
     }
 
     private void registerAbstractItems() {
-        addAbstractItem(new TestItem());
+        addAbstractItem(new ColorfulStaffItem());
+        addAbstractItem(new WitherBowItem());
     }
 
     private void mapItemIdAndStack() {
@@ -40,7 +45,7 @@ public class AbstractItemManager {
             AbstractItem.AbstractItemBuilder builder = item.getBuilder();
 
             if (!mappedItemIdAndStack.containsKey(builder.getItemId())) {
-                mappedItemIdAndStack.put(builder.getItemId(), item.toItemStack());
+                mappedItemIdAndStack.put(builder.getItemId(), item.getBuilder().toItemStack());
             }
         });
     }
@@ -48,9 +53,10 @@ public class AbstractItemManager {
     public void addAbstractItem(AbstractItem abstractItem) {
         if (!isItemRegistered(abstractItem)) {
             registeredItems.add(abstractItem);
-            Bukkit.getServer()
-                    .getLogger()
-                    .info("Abstract item '" + abstractItem.getBuilder().getItemId() + "' registered!");
+            if (abstractItem instanceof Listener itemListener) {
+                plugin.registerEvents(itemListener);
+            }
+            plugin.getLogger().info("Abstract item '" + abstractItem.getBuilder().getItemId() + "' registered!");
         }
     }
 

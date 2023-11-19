@@ -1,4 +1,4 @@
-package me.cat.abstractitems;
+package me.cat.itemsplugin;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;

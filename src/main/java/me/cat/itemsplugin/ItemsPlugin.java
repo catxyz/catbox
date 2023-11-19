@@ -1,6 +1,6 @@
-package me.cat.abstractitems;
+package me.cat.itemsplugin;
 
-import me.cat.abstractitems.abstractitems.manager.AbstractItemManager;
+import me.cat.itemsplugin.abstractitems.manager.AbstractItemManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -17,9 +17,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-public class AbstractItems extends JavaPlugin implements Listener {
+import java.util.List;
 
-    private static AbstractItems INSTANCE;
+public class ItemsPlugin extends JavaPlugin implements Listener {
+
+    private static ItemsPlugin INSTANCE;
     private AbstractItemManager abstractItemManager;
     private boolean abilitiesDisabled = false;
 
@@ -56,7 +58,7 @@ public class AbstractItems extends JavaPlugin implements Listener {
             public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
                 if (!(sender instanceof Player player)) return false;
 
-                if (args.length > 1) {
+                if (args.length != 1) {
                     player.sendMessage(Component.text("Usage -> /" + commandLabel + " <item_id>", NamedTextColor.RED));
                     return false;
                 }
@@ -70,6 +72,17 @@ public class AbstractItems extends JavaPlugin implements Listener {
                 }
 
                 return true;
+            }
+
+            @Override
+            public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
+                if (sender.isOp()) {
+                    return abstractItemManager.getRegisteredItems()
+                            .stream()
+                            .map(item -> item.getBuilder().getItemId())
+                            .toList();
+                }
+                return List.of();
             }
         });
     }
@@ -91,11 +104,15 @@ public class AbstractItems extends JavaPlugin implements Listener {
         }
     }
 
+    public void registerEvents(Listener listener) {
+        getServer().getPluginManager().registerEvents(listener, this);
+    }
+
     public void setAbilitiesDisabled(boolean abilitiesDisabled) {
         this.abilitiesDisabled = abilitiesDisabled;
     }
 
-    public static AbstractItems getInstance() {
+    public static ItemsPlugin getInstance() {
         return INSTANCE;
     }
 

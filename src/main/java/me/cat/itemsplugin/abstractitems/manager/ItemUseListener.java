@@ -1,7 +1,7 @@
-package me.cat.abstractitems.abstractitems.manager;
+package me.cat.itemsplugin.abstractitems.manager;
 
-import me.cat.abstractitems.AbstractItems;
-import me.cat.abstractitems.abstractitems.abstraction.AbstractItem;
+import me.cat.itemsplugin.ItemsPlugin;
+import me.cat.itemsplugin.abstractitems.abstraction.AbstractItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
@@ -48,7 +48,7 @@ public class ItemUseListener implements Listener {
                     if (builder.getUseActions().contains(currentAction)) {
                         if (builder.getMaterial() == currentItem.getType()) {
                             if (Objects.equals(builder.getItemId(), currentItemId)) {
-                                if (AbstractItems.getInstance().abilitiesDisabled()) {
+                                if (ItemsPlugin.getInstance().abilitiesDisabled()) {
                                     player.sendMessage(Component.text("This ability is currently disabled!", NamedTextColor.RED));
                                     event.setCancelled(true);
                                     return;

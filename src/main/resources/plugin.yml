@@ -1,4 +1,4 @@
-name: AbstractItems
-main: me.cat.abstractitems.AbstractItems
+name: ItemsPlugin
+main: me.cat.itemsplugin.ItemsPlugin
 version: 1.0
 api-version: 1.20
