@@ -1,6 +1,7 @@
 package me.cat.itemsplugin;
 
 import me.cat.itemsplugin.abstractitems.manager.AbstractItemManager;
+import me.cat.itemsplugin.abstractitems.manager.CooldownManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -18,6 +19,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Locale;
 
 public class ItemsPlugin extends JavaPlugin implements Listener {
 
@@ -25,12 +27,14 @@ public class ItemsPlugin extends JavaPlugin implements Listener {
     private static final String COMMAND_FALLBACK_PREFIX = "abstract";
     private static final Component COMMAND_MISSING_PERMISSION_COMPONENT = Component.text("Missing permission!", NamedTextColor.RED);
     private AbstractItemManager abstractItemManager;
+    private CooldownManager cooldownManager;
     private boolean abilitiesDisabled = false;
 
     @Override
     public void onEnable() {
         INSTANCE = this;
 
+        this.cooldownManager = new CooldownManager();
         this.abstractItemManager = new AbstractItemManager(this);
         registerCommands();
 
@@ -73,11 +77,17 @@ public class ItemsPlugin extends JavaPlugin implements Listener {
                     return false;
                 }
 
-                ItemStack itemToGive = abstractItemManager.getMappedItemIdAndStack().get(args[0]);
+                String itemId = args[0];
+                ItemStack itemToGive = abstractItemManager.getMappedItemIdAndStack().get(itemId);
                 if (itemToGive == null) {
                     player.sendMessage(Component.text("Invalid item id!", NamedTextColor.RED));
                     return false;
                 } else {
+                    player.sendMessage(Component.text("Gave ", NamedTextColor.GREEN)
+                            .append(Component.text(itemId.toUpperCase(Locale.ROOT), NamedTextColor.YELLOW))
+                            .append(Component.text(" to ", NamedTextColor.GREEN))
+                            .append(Component.text(player.getName(), NamedTextColor.YELLOW))
+                            .append(Component.text('!', NamedTextColor.GREEN)));
                     player.getInventory().addItem(itemToGive);
                 }
 
@@ -128,6 +138,10 @@ public class ItemsPlugin extends JavaPlugin implements Listener {
 
     public AbstractItemManager getAbstractItemManager() {
         return abstractItemManager;
+    }
+
+    public CooldownManager getCooldownManager() {
+        return cooldownManager;
     }
 
     public boolean abilitiesDisabled() {

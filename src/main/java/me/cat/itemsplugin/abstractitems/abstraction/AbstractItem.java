@@ -2,11 +2,16 @@ package me.cat.itemsplugin.abstractitems.abstraction;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import me.cat.itemsplugin.Helper;
 import me.cat.itemsplugin.ItemsPlugin;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemFlag;
@@ -15,8 +20,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public abstract class AbstractItem {
 
@@ -42,9 +50,12 @@ public abstract class AbstractItem {
         private List<Action> useActions = Lists.newArrayList();
         private String itemId = UUID.randomUUID().toString().replace("-", "");
         private Material material = Material.STONE;
-        private Component displayName = Component.text(UUID.randomUUID().toString().replace("-", ""));
-        private List<Component> lore = Lists.newArrayList();
+        private Map<Enchantment, Integer> enchants = Maps.newHashMap();
+        private TextComponent displayName = Component.text(UUID.randomUUID().toString().replace("-", ""));
+        private List<TextComponent> lore = Lists.newArrayList();
         private boolean unbreakableItem = true;
+        private List<ItemFlag> itemFlags = Lists.newArrayList();
+        private Duration useCooldown = Duration.ofSeconds(1L);
 
         public AbstractItemBuilder setUseActions(List<Action> useActions) {
             this.useActions = useActions;
@@ -69,12 +80,17 @@ public abstract class AbstractItem {
             return this;
         }
 
-        public AbstractItemBuilder setDisplayName(Component displayName) {
+        public AbstractItemBuilder setEnchants(Map<Enchantment, Integer> enchants) {
+            this.enchants = enchants;
+            return this;
+        }
+
+        public AbstractItemBuilder setDisplayName(TextComponent displayName) {
             this.displayName = displayName;
             return this;
         }
 
-        public AbstractItemBuilder setLore(List<Component> lore) {
+        public AbstractItemBuilder setLore(List<TextComponent> lore) {
             this.lore = lore;
             return this;
         }
@@ -84,15 +100,42 @@ public abstract class AbstractItem {
             return this;
         }
 
+        public AbstractItemBuilder setItemFlags(List<ItemFlag> itemFlags) {
+            this.itemFlags = itemFlags;
+            return this;
+        }
+
+        public AbstractItemBuilder setUseCooldown(Duration useCooldown) {
+            this.useCooldown = useCooldown;
+            return this;
+        }
+
         public PersistentDataContainer getPersistentDataContainer() {
             return persistentDataContainer;
         }
 
         public ItemStack toItemStack() {
+            enchants.forEach((enchant, level) -> itemMeta.addEnchant(enchant, level, true));
+
             itemMeta.displayName(displayName.decoration(TextDecoration.ITALIC, false));
-            itemMeta.lore(lore.stream()
-                    .map(component -> component.decoration(TextDecoration.ITALIC, false))
-                    .toList());
+
+            List<TextComponent> correctedLore = Lists.newArrayList(lore);
+            correctedLore.add(Component.empty());
+            correctedLore.add(Component.empty());
+            correctedLore.add(Component.text("Cooldown ->", NamedTextColor.GRAY, TextDecoration.BOLD));
+            correctedLore.add(Component.text(Helper.formatDuration(useCooldown), NamedTextColor.YELLOW));
+
+            itemMeta.lore(correctedLore.stream()
+                    .map(component -> {
+                        if (component.hasDecoration(TextDecoration.BOLD)) {
+                            return component.decoration(TextDecoration.ITALIC, false);
+                        }
+                        if (component.hasDecoration(TextDecoration.ITALIC)) {
+                            return component;
+                        }
+                        return component.decoration(TextDecoration.ITALIC, false);
+                    })
+                    .collect(Collectors.toList()));
 
             itemMeta.getPersistentDataContainer()
                     .set(IS_CUSTOM_ITEM_TAG, PersistentDataType.BOOLEAN, true);
@@ -101,10 +144,16 @@ public abstract class AbstractItem {
 
             itemMeta.setUnbreakable(unbreakableItem);
 
-            itemMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+            List<ItemFlag> alreadyProvidedItemFlags = Lists.newArrayList(itemFlags);
+            alreadyProvidedItemFlags.add(ItemFlag.HIDE_UNBREAKABLE);
+            alreadyProvidedItemFlags.forEach(itemFlag -> itemMeta.addItemFlags(itemFlag));
 
             itemStack.setItemMeta(itemMeta);
             return itemStack;
+        }
+
+        public ItemMeta getItemMeta() {
+            return itemMeta;
         }
 
         public List<Action> getUseActions() {
@@ -119,16 +168,28 @@ public abstract class AbstractItem {
             return material;
         }
 
-        public Component getDisplayName() {
+        public Map<Enchantment, Integer> getEnchants() {
+            return enchants;
+        }
+
+        public TextComponent getDisplayName() {
             return displayName;
         }
 
-        public List<Component> getLore() {
+        public List<TextComponent> getLore() {
             return lore;
         }
 
         public boolean isUnbreakableItem() {
             return unbreakableItem;
+        }
+
+        public List<ItemFlag> getItemFlags() {
+            return itemFlags;
+        }
+
+        public Duration getUseCooldown() {
+            return useCooldown;
         }
     }
 

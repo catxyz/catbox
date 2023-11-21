@@ -4,8 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import me.cat.itemsplugin.ItemsPlugin;
 import me.cat.itemsplugin.abstractitems.abstraction.AbstractItem;
-import me.cat.itemsplugin.abstractitems.items.ColorfulStaffItem;
-import me.cat.itemsplugin.abstractitems.items.WitherBowItem;
+import me.cat.itemsplugin.abstractitems.items.*;
 import org.bukkit.Material;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
@@ -36,8 +35,12 @@ public class AbstractItemManager {
     }
 
     private void registerAbstractItems() {
-        addAbstractItem(new ColorfulStaffItem());
+        addAbstractItem(new ColorBlasterItem());
+        addAbstractItem(new MyPreciousItem());
+        addAbstractItem(new RemoteBombItem());
+        addAbstractItem(new TestificateSpawnerItem());
         addAbstractItem(new WitherBowItem());
+        addAbstractItem(new WorldCorrupterItem());
     }
 
     private void mapItemIdAndStack() {
@@ -45,7 +48,7 @@ public class AbstractItemManager {
             AbstractItem.AbstractItemBuilder builder = item.getBuilder();
 
             if (!mappedItemIdAndStack.containsKey(builder.getItemId())) {
-                mappedItemIdAndStack.put(builder.getItemId(), item.getBuilder().toItemStack());
+                mappedItemIdAndStack.put(builder.getItemId(), builder.toItemStack());
             }
         });
     }

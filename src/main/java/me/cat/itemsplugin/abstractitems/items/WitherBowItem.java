@@ -1,14 +1,15 @@
 package me.cat.itemsplugin.abstractitems.items;
 
 import com.google.common.base.Preconditions;
+import me.cat.itemsplugin.Helper;
 import me.cat.itemsplugin.ItemsPlugin;
 import me.cat.itemsplugin.abstractitems.abstraction.AbstractItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.WitherSkull;
 import org.bukkit.event.EventHandler;
@@ -18,7 +19,6 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.util.Vector;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,6 +29,7 @@ public class WitherBowItem extends AbstractItem implements Listener {
             "wither_bow_arrow",
             ItemsPlugin.getInstance()
     ));
+    private static final long DESPAWN_SECONDS = 4L;
 
     public WitherBowItem() {
         super(
@@ -42,8 +43,7 @@ public class WitherBowItem extends AbstractItem implements Listener {
                         .addData(WITHER_BOW_ARROW_TAG, PersistentDataType.BOOLEAN, true)
                         .setDisplayName(Component.text("Wither Bow", NamedTextColor.BLUE))
                         .setLore(List.of(
-                                Component.empty(),
-                                Component.text("A cool bow!", NamedTextColor.GRAY)
+                                Component.text("Dead inside!", NamedTextColor.GRAY)
                         ))
         );
     }
@@ -61,22 +61,18 @@ public class WitherBowItem extends AbstractItem implements Listener {
                     event.getProjectile().remove();
 
                     player.getWorld().spawn(player.getEyeLocation(), WitherSkull.class, witherSkull -> {
-                        AtomicInteger atomicInteger = new AtomicInteger();
+                        AtomicInteger witherSkullSecondsAlive = new AtomicInteger();
 
                         Bukkit.getServer().getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
-                            atomicInteger.getAndIncrement();
+                            witherSkullSecondsAlive.getAndIncrement();
 
                             if (!witherSkull.isValid()) {
                                 task.cancel();
                             }
-                            if (atomicInteger.get() >= 4L) {
-                                witherSkull.remove();
+                            if (witherSkullSecondsAlive.get() >= DESPAWN_SECONDS) {
+                                Helper.removeEntitiesInStyle(Particle.SONIC_BOOM, 1, witherSkull);
                                 task.cancel();
                             }
-
-                            Location witherSkullLocation = witherSkull.getLocation().clone();
-                            Vector vec = witherSkullLocation.getDirection();
-                            witherSkull.teleport(witherSkullLocation.add(vec));
                         }, 0L, 20L);
                     });
                 }

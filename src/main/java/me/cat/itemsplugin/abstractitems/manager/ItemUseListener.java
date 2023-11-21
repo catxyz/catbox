@@ -1,5 +1,6 @@
 package me.cat.itemsplugin.abstractitems.manager;
 
+import me.cat.itemsplugin.Helper;
 import me.cat.itemsplugin.ItemsPlugin;
 import me.cat.itemsplugin.abstractitems.abstraction.AbstractItem;
 import net.kyori.adventure.text.Component;
@@ -19,9 +20,11 @@ import java.util.Optional;
 public class ItemUseListener implements Listener {
 
     private final AbstractItemManager abstractItemManager;
+    private CooldownManager cooldownManager;
 
     public ItemUseListener(AbstractItemManager abstractItemManager) {
         this.abstractItemManager = abstractItemManager;
+        this.cooldownManager = ItemsPlugin.getInstance().getCooldownManager();
     }
 
     @EventHandler
@@ -53,7 +56,21 @@ public class ItemUseListener implements Listener {
                                     event.setCancelled(true);
                                     return;
                                 }
-                                item.useItemInteraction(event);
+
+                                if (cooldownManager.isCooldownOver(player.getUniqueId(), builder.getUseCooldown())) {
+                                    player.sendMessage(Helper.playActivatedMessage(builder.getDisplayName()));
+                                    item.useItemInteraction(event);
+
+                                    cooldownManager.removeFromCooldown(player.getUniqueId());
+                                    cooldownManager.addToCooldown(player.getUniqueId());
+                                } else {
+                                    event.setCancelled(true);
+                                    player.sendMessage(Component.text("Please wait ", NamedTextColor.RED)
+                                            .append(Component.text(Helper.formatDuration(builder.getUseCooldown()), NamedTextColor.YELLOW))
+                                            .append(Component.text(" to use ", NamedTextColor.RED))
+                                            .append(builder.getDisplayName())
+                                            .append(Component.text(" again!", NamedTextColor.RED)));
+                                }
                             }
                         }
                     }

@@ -1,7 +1,7 @@
 package me.cat.itemsplugin.abstractitems.items;
 
+import me.cat.itemsplugin.Helper;
 import me.cat.itemsplugin.ItemsPlugin;
-import me.cat.itemsplugin.Utils;
 import me.cat.itemsplugin.abstractitems.abstraction.AbstractItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -15,16 +15,18 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ColorfulStaffItem extends AbstractItem {
+public class ColorBlasterItem extends AbstractItem {
 
+    private static final long DESPAWN_SECONDS = 3L;
     private Player shooter;
 
-    public ColorfulStaffItem() {
+    public ColorBlasterItem() {
         super(
                 new AbstractItemBuilder()
                         .setUseActions(List.of(
@@ -33,12 +35,12 @@ public class ColorfulStaffItem extends AbstractItem {
                                 Action.LEFT_CLICK_AIR,
                                 Action.LEFT_CLICK_BLOCK
                         ))
-                        .setItemId("colorful_staff")
+                        .setItemId("color_blaster")
+                        .setUseCooldown(Duration.ofMillis(1_500L))
                         .setMaterial(Material.BLAZE_ROD)
-                        .setDisplayName(Component.text("Colorful Staff", NamedTextColor.GOLD))
+                        .setDisplayName(Component.text("Color Blaster", NamedTextColor.GOLD))
                         .setLore(List.of(
-                                Component.empty(),
-                                Component.text("A colorful staff!", NamedTextColor.GRAY)
+                                Component.text("All the colors of light!", NamedTextColor.LIGHT_PURPLE)
                         ))
         );
     }
@@ -49,7 +51,7 @@ public class ColorfulStaffItem extends AbstractItem {
 
         this.shooter = player;
 
-        player.sendMessage(Component.text("Pew! Pew! Pew!", NamedTextColor.YELLOW));
+        player.sendMessage(Component.text("pew!", NamedTextColor.GRAY));
         player.playSound(player.getLocation(), Sound.ENTITY_CAT_AMBIENT, 10f, 1f);
 
         List<Material> headColors = Arrays.stream(Material.values())
@@ -59,7 +61,8 @@ public class ColorfulStaffItem extends AbstractItem {
             armorStand.setSmall(true);
             armorStand.setGravity(false);
             armorStand.setVisible(false);
-            armorStand.getEquipment().setHelmet(new ItemStack(headColors.get(ThreadLocalRandom.current().nextInt(headColors.size()))));
+            armorStand.getEquipment()
+                    .setHelmet(new ItemStack(headColors.get(ThreadLocalRandom.current().nextInt(headColors.size()))));
 
             Bukkit.getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
                 if (!armorStand.isValid()) {
@@ -75,14 +78,14 @@ public class ColorfulStaffItem extends AbstractItem {
 
             runKillEntitiesAroundArmorStandTask(armorStand);
 
-            AtomicInteger armorStandSecondsToLive = new AtomicInteger();
+            AtomicInteger armorStandSecondsAlive = new AtomicInteger();
             Bukkit.getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
                 if (!armorStand.isValid()) {
                     task.cancel();
                 }
-                armorStandSecondsToLive.getAndIncrement();
+                armorStandSecondsAlive.getAndIncrement();
 
-                if (armorStandSecondsToLive.get() >= 3) {
+                if (armorStandSecondsAlive.get() >= DESPAWN_SECONDS) {
                     spawnCustomFirework(armorStand.getWorld(), armorStand.getLocation());
                     armorStand.remove();
                     task.cancel();
@@ -95,7 +98,7 @@ public class ColorfulStaffItem extends AbstractItem {
         Bukkit.getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
             Location armorStandLocation = armorStand.getLocation();
 
-            if (armorStandLocation.clone().subtract(0.0d, 0.1d, 0.0d).getBlock().getType() != Material.AIR) {
+            if (Helper.isOnGround(armorStandLocation)) {
                 Location missLoc = armorStandLocation.clone().add(0.0d, 0.9d, 0.0d);
                 spawnCustomFirework(armorStand.getWorld(), missLoc);
                 armorStand.remove();
@@ -133,7 +136,7 @@ public class ColorfulStaffItem extends AbstractItem {
                 ));
                 livingEntity.damage(damageToDeal);
                 shooter.sendMessage(Component.text("You dealt ", NamedTextColor.GRAY)
-                        .append(Component.text(Utils.formatNum(damageToDeal), NamedTextColor.RED))
+                        .append(Component.text(Helper.formatNum(damageToDeal), NamedTextColor.RED))
                         .append(Component.text(" damage to ", NamedTextColor.GRAY))
                         .append(Component.text(livingEntity.getName(), NamedTextColor.YELLOW))
                         .append(Component.text('!', NamedTextColor.GRAY)));
