@@ -58,18 +58,14 @@ public class ItemUseListener implements Listener {
                                 }
 
                                 if (cooldownManager.isCooldownOver(player.getUniqueId(), builder.getUseCooldown())) {
-                                    player.sendMessage(Helper.playActivatedMessage(builder.getDisplayName()));
+                                    player.sendMessage(Helper.getPlayActivatedMessageComponent(builder.getDisplayName()));
                                     item.useItemInteraction(event);
 
                                     cooldownManager.removeFromCooldown(player.getUniqueId());
                                     cooldownManager.addToCooldown(player.getUniqueId());
                                 } else {
+                                    player.sendMessage(Helper.getPlayCooldownMessageComponent(builder.getDisplayName(), builder.getUseCooldown()));
                                     event.setCancelled(true);
-                                    player.sendMessage(Component.text("Please wait ", NamedTextColor.RED)
-                                            .append(Component.text(Helper.formatDuration(builder.getUseCooldown()), NamedTextColor.YELLOW))
-                                            .append(Component.text(" to use ", NamedTextColor.RED))
-                                            .append(builder.getDisplayName())
-                                            .append(Component.text(" again!", NamedTextColor.RED)));
                                 }
                             }
                         }

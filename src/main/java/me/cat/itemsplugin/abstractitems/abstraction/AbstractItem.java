@@ -75,8 +75,8 @@ public abstract class AbstractItem {
             return this;
         }
 
-        public <T, Z> AbstractItemBuilder addData(NamespacedKey key, PersistentDataType<T, Z> type, Z value) {
-            this.persistentDataContainer.set(key, type, value);
+        public <T, Z> AbstractItemBuilder addData(NamespacedKey key, PersistentDataType<T, Z> dataType, Z value) {
+            this.persistentDataContainer.set(key, dataType, value);
             return this;
         }
 
@@ -122,8 +122,8 @@ public abstract class AbstractItem {
             List<TextComponent> correctedLore = Lists.newArrayList(lore);
             correctedLore.add(Component.empty());
             correctedLore.add(Component.empty());
-            correctedLore.add(Component.text("Cooldown ->", NamedTextColor.GRAY, TextDecoration.BOLD));
-            correctedLore.add(Component.text(Helper.formatDuration(useCooldown), NamedTextColor.YELLOW));
+            correctedLore.add(Component.text("Cooldown", NamedTextColor.WHITE, TextDecoration.BOLD));
+            correctedLore.add(Component.text(Helper.formatDuration(useCooldown), NamedTextColor.WHITE));
 
             itemMeta.lore(correctedLore.stream()
                     .map(component -> {

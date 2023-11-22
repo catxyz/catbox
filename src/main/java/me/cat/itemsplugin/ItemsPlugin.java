@@ -19,7 +19,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Locale;
 
 public class ItemsPlugin extends JavaPlugin implements Listener {
 
@@ -63,6 +62,20 @@ public class ItemsPlugin extends JavaPlugin implements Listener {
             }
         });
 
+        this.getServer().getCommandMap().register(COMMAND_FALLBACK_PREFIX, new Command("giveAllCustomItems") {
+            @Override
+            public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
+                if (!(sender instanceof Player player)) return false;
+                if (!sender.isOp()) {
+                    player.sendMessage(COMMAND_MISSING_PERMISSION_COMPONENT);
+                    return false;
+                }
+
+                abstractItemManager.giveAllItems(player);
+                return true;
+            }
+        });
+
         this.getServer().getCommandMap().register(COMMAND_FALLBACK_PREFIX, new Command("giveCustomItem") {
             @Override
             public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
@@ -83,11 +96,7 @@ public class ItemsPlugin extends JavaPlugin implements Listener {
                     player.sendMessage(Component.text("Invalid item id!", NamedTextColor.RED));
                     return false;
                 } else {
-                    player.sendMessage(Component.text("Gave ", NamedTextColor.GREEN)
-                            .append(Component.text(itemId.toUpperCase(Locale.ROOT), NamedTextColor.YELLOW))
-                            .append(Component.text(" to ", NamedTextColor.GREEN))
-                            .append(Component.text(player.getName(), NamedTextColor.YELLOW))
-                            .append(Component.text('!', NamedTextColor.GREEN)));
+                    player.sendMessage(Helper.getPlayGiveItemMessageComponent(itemId, player.getName()));
                     player.getInventory().addItem(itemToGive);
                 }
 

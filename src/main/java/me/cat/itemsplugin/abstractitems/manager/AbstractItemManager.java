@@ -2,10 +2,12 @@ package me.cat.itemsplugin.abstractitems.manager;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import me.cat.itemsplugin.Helper;
 import me.cat.itemsplugin.ItemsPlugin;
 import me.cat.itemsplugin.abstractitems.abstraction.AbstractItem;
 import me.cat.itemsplugin.abstractitems.items.*;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
@@ -35,9 +37,10 @@ public class AbstractItemManager {
     }
 
     private void registerAbstractItems() {
-        addAbstractItem(new ColorBlasterItem());
+        addAbstractItem(new LightWandItem());
         addAbstractItem(new MyPreciousItem());
-        addAbstractItem(new RemoteBombItem());
+        addAbstractItem(new PassengerEnderPearlItem());
+        addAbstractItem(new DestructorBowItem());
         addAbstractItem(new TestificateSpawnerItem());
         addAbstractItem(new WitherBowItem());
         addAbstractItem(new WorldCorrupterItem());
@@ -50,6 +53,20 @@ public class AbstractItemManager {
             if (!mappedItemIdAndStack.containsKey(builder.getItemId())) {
                 mappedItemIdAndStack.put(builder.getItemId(), builder.toItemStack());
             }
+        });
+    }
+
+    public ItemStack getItemStackById(String itemId) {
+        if (mappedItemIdAndStack.containsKey(itemId)) {
+            return mappedItemIdAndStack.get(itemId);
+        }
+        return new ItemStack(Material.STONE);
+    }
+
+    public void giveAllItems(Player player) {
+        mappedItemIdAndStack.forEach((itemId, itemStack) -> {
+            player.sendMessage(Helper.getPlayGiveItemMessageComponent(itemId, player.getName()));
+            player.getInventory().addItem(itemStack);
         });
     }
 

@@ -7,7 +7,6 @@ import me.cat.itemsplugin.ItemsPlugin;
 import me.cat.itemsplugin.abstractitems.abstraction.AbstractItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -54,7 +53,7 @@ public class WorldCorrupterItem extends AbstractItem implements Listener {
                         ))
                         .setDisplayName(Component.text("World Corrupter", NamedTextColor.RED))
                         .setLore(List.of(
-                                Component.text("gross.", NamedTextColor.DARK_GREEN, TextDecoration.ITALIC)
+                                Component.text("???", NamedTextColor.GRAY)
                         ))
         );
     }
@@ -74,8 +73,9 @@ public class WorldCorrupterItem extends AbstractItem implements Listener {
                     Helper.createSurfaceLayer(
                             tridentEntity.getWorld(),
                             tridentEntity.getLocation(),
-                            ThreadLocalRandom.current().nextInt(6, 12),
-                            Arrays.stream(Material.values()).toList()
+                            ThreadLocalRandom.current().nextInt(5, 10),
+                            Arrays.stream(Material.values()).toList(),
+                            affectedBlocks -> affectedBlocks.forEach(block -> tridentEntity.getWorld().strikeLightningEffect(block.getLocation()))
                     );
                     task.cancel();
                 }

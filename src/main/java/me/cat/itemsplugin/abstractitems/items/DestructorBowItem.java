@@ -26,25 +26,25 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class RemoteBombItem extends AbstractItem implements Listener {
+public class DestructorBowItem extends AbstractItem implements Listener {
 
     private static final NamespacedKey REMOTE_BOMB_ARROW_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
-            "remote_bomb_arrow",
+            "destructor_bow_arrow",
             ItemsPlugin.getInstance()
     ));
     private static final long DESPAWN_SECONDS = 4L;
 
-    public RemoteBombItem() {
+    public DestructorBowItem() {
         super(
                 new AbstractItemBuilder()
                         .setUseActions(List.of(
                                 Action.RIGHT_CLICK_AIR,
                                 Action.RIGHT_CLICK_BLOCK
                         ))
-                        .setItemId("remote_bomb")
+                        .setItemId("destructor_bow")
                         .setMaterial(Material.BOW)
                         .addData(REMOTE_BOMB_ARROW_TAG, PersistentDataType.BOOLEAN, true)
-                        .setDisplayName(Component.text("Remote Bomb", NamedTextColor.DARK_RED))
+                        .setDisplayName(Component.text("Destruct-a-bow", NamedTextColor.GREEN))
                         .setLore(List.of(
                                 Component.text("Wouldn't it be unfortunate", NamedTextColor.GRAY),
                                 Component.text("if this were to spontaneously combust?", NamedTextColor.GRAY)
@@ -66,11 +66,11 @@ public class RemoteBombItem extends AbstractItem implements Listener {
                     blockDisplay.setBlock(Bukkit.createBlockData(Material.TNT));
                     blockDisplay.setBillboard(Display.Billboard.CENTER);
 
-                    float explosionPower = ThreadLocalRandom.current().nextFloat(35f, 50f);
+                    float explosionPower = ThreadLocalRandom.current().nextFloat(2f, 2.5f);
 
                     AtomicInteger ticksPassed = new AtomicInteger();
                     AtomicInteger arrowSecondsAlive = new AtomicInteger();
-                    Bukkit.getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
+                    Bukkit.getServer().getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
                         ticksPassed.getAndIncrement();
                         if (ticksPassed.get() % 20 == 0) {
                             arrowSecondsAlive.getAndIncrement();

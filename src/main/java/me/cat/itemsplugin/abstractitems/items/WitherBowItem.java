@@ -20,6 +20,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -39,6 +40,7 @@ public class WitherBowItem extends AbstractItem implements Listener {
                                 Action.RIGHT_CLICK_BLOCK
                         ))
                         .setItemId("wither_bow")
+                        .setUseCooldown(Duration.ZERO)
                         .setMaterial(Material.BOW)
                         .addData(WITHER_BOW_ARROW_TAG, PersistentDataType.BOOLEAN, true)
                         .setDisplayName(Component.text("Wither Bow", NamedTextColor.BLUE))

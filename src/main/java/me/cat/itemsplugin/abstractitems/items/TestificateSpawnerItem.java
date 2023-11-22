@@ -1,12 +1,11 @@
 package me.cat.itemsplugin.abstractitems.items;
 
-import com.google.common.base.Preconditions;
 import me.cat.itemsplugin.abstractitems.abstraction.AbstractItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.block.Action;
@@ -64,8 +63,12 @@ public class TestificateSpawnerItem extends AbstractItem {
             player.sendMessage(Component.text("Spawned ", NamedTextColor.YELLOW)
                     .append(Component.text(currentRandomName, currentRandomColor)));
 
-            Location playerTargetBlockLoc = Preconditions.checkNotNull(player.getTargetBlockExact(100)).getLocation();
-            player.getWorld().spawn(playerTargetBlockLoc, Villager.class, villager -> {
+            Block playerTargetBlock = player.getTargetBlockExact(100);
+            if (playerTargetBlock == null) {
+                player.sendMessage(Component.text("Invalid location!", NamedTextColor.RED));
+                return;
+            }
+            player.getWorld().spawn(playerTargetBlock.getLocation(), Villager.class, villager -> {
                 villager.setCustomNameVisible(true);
                 villager.customName(Component.text(currentRandomName, currentRandomColor));
             });

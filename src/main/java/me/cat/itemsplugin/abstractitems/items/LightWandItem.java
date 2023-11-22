@@ -21,12 +21,12 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ColorBlasterItem extends AbstractItem {
+public class LightWandItem extends AbstractItem {
 
     private static final long DESPAWN_SECONDS = 3L;
     private Player shooter;
 
-    public ColorBlasterItem() {
+    public LightWandItem() {
         super(
                 new AbstractItemBuilder()
                         .setUseActions(List.of(
@@ -35,10 +35,10 @@ public class ColorBlasterItem extends AbstractItem {
                                 Action.LEFT_CLICK_AIR,
                                 Action.LEFT_CLICK_BLOCK
                         ))
-                        .setItemId("color_blaster")
+                        .setItemId("light_wand")
                         .setUseCooldown(Duration.ofMillis(1_500L))
                         .setMaterial(Material.BLAZE_ROD)
-                        .setDisplayName(Component.text("Color Blaster", NamedTextColor.GOLD))
+                        .setDisplayName(Component.text("Light Wand", NamedTextColor.GOLD))
                         .setLore(List.of(
                                 Component.text("All the colors of light!", NamedTextColor.LIGHT_PURPLE)
                         ))
@@ -64,7 +64,7 @@ public class ColorBlasterItem extends AbstractItem {
             armorStand.getEquipment()
                     .setHelmet(new ItemStack(headColors.get(ThreadLocalRandom.current().nextInt(headColors.size()))));
 
-            Bukkit.getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
+            Bukkit.getServer().getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
                 if (!armorStand.isValid()) {
                     task.cancel();
                 }
@@ -79,7 +79,7 @@ public class ColorBlasterItem extends AbstractItem {
             runKillEntitiesAroundArmorStandTask(armorStand);
 
             AtomicInteger armorStandSecondsAlive = new AtomicInteger();
-            Bukkit.getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
+            Bukkit.getServer().getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
                 if (!armorStand.isValid()) {
                     task.cancel();
                 }
@@ -95,7 +95,7 @@ public class ColorBlasterItem extends AbstractItem {
     }
 
     private void spawnFireworkOnGroundHit(ArmorStand armorStand) {
-        Bukkit.getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
+        Bukkit.getServer().getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
             Location armorStandLocation = armorStand.getLocation();
 
             if (Helper.isOnGround(armorStandLocation)) {
@@ -108,7 +108,7 @@ public class ColorBlasterItem extends AbstractItem {
     }
 
     private void runKillEntitiesAroundArmorStandTask(ArmorStand armorStand) {
-        Bukkit.getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
+        Bukkit.getServer().getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
             if (!armorStand.isValid()) {
                 task.cancel();
             }
