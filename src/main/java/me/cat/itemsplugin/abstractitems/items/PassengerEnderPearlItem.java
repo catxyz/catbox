@@ -17,8 +17,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.persistence.PersistentDataType;
@@ -109,18 +111,23 @@ public class PassengerEnderPearlItem extends AbstractItem implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
+        Inventory clickedInventory = event.getClickedInventory();
 
-        if (event.getSlot() == OFFHAND_SLOT_NUMBER) {
-            ItemStack itemOnCursor = event.getCursor();
-            if (itemOnCursor.getType() == Material.AIR) {
-                return;
-            }
-            if (itemOnCursor.getItemMeta().getPersistentDataContainer().has(PASSENGER_ENDER_PEARL_TAG)) {
-                player.sendMessage(Component.text("You can't do that!", NamedTextColor.RED));
-                event.setCancelled(true);
+        if (clickedInventory != null) {
+            if (clickedInventory.getType() == InventoryType.PLAYER) {
+                if (event.getSlot() == OFFHAND_SLOT_NUMBER) {
+                    ItemStack itemOnCursor = event.getCursor();
+                    if (itemOnCursor.getType() == Material.AIR) {
+                        return;
+                    }
+                    if (itemOnCursor.getItemMeta().getPersistentDataContainer().has(PASSENGER_ENDER_PEARL_TAG)) {
+                        player.sendMessage(Component.text("You can't do that!", NamedTextColor.RED));
+                        event.setCancelled(true);
 
-                event.setCursor(null);
-                player.getInventory().addItem(getBuilder().toItemStack());
+                        event.setCursor(null);
+                        player.getInventory().addItem(getBuilder().toItemStack());
+                    }
+                }
             }
         }
     }
