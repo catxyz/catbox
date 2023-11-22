@@ -127,7 +127,7 @@ public class PassengerEnderPearlItem extends AbstractItem implements Listener {
 
     private void checkForBadEnderPearls() {
         Bukkit.getServer().getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
-            for (Player player : Bukkit.getOnlinePlayers()) {
+            for (Player player : Bukkit.getServer().getOnlinePlayers()) {
                 PlayerInventory playerInventory = player.getInventory();
                 ItemStack offHandItem = playerInventory.getItemInOffHand();
 
