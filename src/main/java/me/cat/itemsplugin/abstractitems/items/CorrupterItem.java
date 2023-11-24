@@ -58,7 +58,7 @@ public class CorrupterItem extends AbstractItem implements Listener {
                                 ItemFlag.HIDE_ENCHANTS,
                                 ItemFlag.HIDE_ATTRIBUTES
                         ))
-                        .setDisplayName(Component.text("Corrupter", NamedTextColor.YELLOW))
+                        .setDisplayName(Component.text("Corrupter", NamedTextColor.GOLD))
                         .setLore(List.of(
                                 Component.empty(),
                                 Component.text("???", NamedTextColor.GRAY)

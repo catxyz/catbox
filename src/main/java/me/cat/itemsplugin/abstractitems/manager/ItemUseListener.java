@@ -20,7 +20,7 @@ import java.util.Optional;
 public class ItemUseListener implements Listener {
 
     private final AbstractItemManager abstractItemManager;
-    private CooldownManager cooldownManager;
+    private final CooldownManager cooldownManager;
 
     public ItemUseListener(AbstractItemManager abstractItemManager) {
         this.abstractItemManager = abstractItemManager;

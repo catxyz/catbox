@@ -95,7 +95,7 @@ public class Helper {
 
         for (int x = centerX - radius; x <= centerX + radius; x++) {
             for (int z = centerZ - radius; z <= centerZ + radius; z++) {
-                double distance = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(z - centerZ, 2));
+                double distance = Math.sqrt(Math.pow(x - centerX, 2.0d) + Math.pow(z - centerZ, 2.0d));
 
                 if (distance <= radius) {
                     int y = world.getHighestBlockYAt(x, z);
