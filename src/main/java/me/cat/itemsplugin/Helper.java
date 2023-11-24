@@ -2,7 +2,9 @@ package me.cat.itemsplugin;
 
 import com.google.common.collect.Lists;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -40,6 +42,24 @@ public class Helper {
                 .append(Component.text(" again in ", NamedTextColor.RED))
                 .append(Component.text(Helper.formatDuration(useCooldown), NamedTextColor.YELLOW))
                 .append(Component.text('!', NamedTextColor.RED));
+    }
+
+    public static Component makeComponentColorful(TextComponent component) {
+        int rgbLimit = 255;
+
+        String originalComponentContent = component.content();
+        Component newComponent = Component.empty();
+
+        for (int i = 0; i < originalComponentContent.length(); i++) {
+            TextColor textColor = TextColor.color(
+                    ThreadLocalRandom.current().nextInt(rgbLimit),
+                    ThreadLocalRandom.current().nextInt(rgbLimit),
+                    ThreadLocalRandom.current().nextInt(rgbLimit)
+            );
+
+            newComponent = newComponent.append(Component.text(originalComponentContent.charAt(i), textColor));
+        }
+        return newComponent;
     }
 
     public static String formatNum(Object number) {

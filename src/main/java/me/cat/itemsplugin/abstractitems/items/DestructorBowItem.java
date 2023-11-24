@@ -46,6 +46,7 @@ public class DestructorBowItem extends AbstractItem implements Listener {
                         .addData(REMOTE_BOMB_ARROW_TAG, PersistentDataType.BOOLEAN, true)
                         .setDisplayName(Component.text("Destruct-a-bow", NamedTextColor.GREEN))
                         .setLore(List.of(
+                                Component.empty(),
                                 Component.text("Wouldn't it be unfortunate", NamedTextColor.GRAY),
                                 Component.text("if this were to spontaneously combust?", NamedTextColor.GRAY)
                         ))
@@ -62,6 +63,8 @@ public class DestructorBowItem extends AbstractItem implements Listener {
             ItemStack bow = event.getBow();
             if (bow != null) {
                 if (bow.getItemMeta().getPersistentDataContainer().has(REMOTE_BOMB_ARROW_TAG)) {
+                    Arrow arrow = (Arrow) event.getProjectile();
+
                     BlockDisplay blockDisplay = player.getWorld().spawn(player.getEyeLocation(), BlockDisplay.class);
                     blockDisplay.setBlock(Bukkit.createBlockData(Material.TNT));
                     blockDisplay.setBillboard(Display.Billboard.CENTER);
@@ -76,14 +79,14 @@ public class DestructorBowItem extends AbstractItem implements Listener {
                             arrowSecondsAlive.getAndIncrement();
                         }
 
-                        Arrow arrow = (Arrow) event.getProjectile();
                         if (!arrow.isValid()) {
                             Helper.removeEntitiesInStyle(Particle.SONIC_BOOM, 1, blockDisplay);
                             task.cancel();
                         }
 
                         if (arrowSecondsAlive.get() >= DESPAWN_SECONDS) {
-                            Helper.removeEntitiesInStyle(Particle.SONIC_BOOM, 1, arrow, blockDisplay);
+                            Helper.removeEntitiesInStyle(Particle.SONIC_BOOM, 1,
+                                    arrow, blockDisplay);
                             task.cancel();
                         }
 

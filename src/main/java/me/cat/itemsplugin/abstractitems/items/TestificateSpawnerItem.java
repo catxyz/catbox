@@ -19,6 +19,8 @@ public class TestificateSpawnerItem extends AbstractItem {
 
     private static final String[] TESTIFICATE_NAMES = new String[]{
             "jerry",
+            "barbie",
+            "ken",
             "tom",
             "fred",
             "jane",
@@ -40,6 +42,7 @@ public class TestificateSpawnerItem extends AbstractItem {
                         ))
                         .setDisplayName(Component.text("Testificate Spawner", NamedTextColor.RED))
                         .setLore(List.of(
+                                Component.empty(),
                                 Component.text("They usually live a very short life.", NamedTextColor.GRAY)
                         ))
         );

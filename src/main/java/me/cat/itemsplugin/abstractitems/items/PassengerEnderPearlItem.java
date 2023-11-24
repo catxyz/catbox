@@ -3,6 +3,7 @@ package me.cat.itemsplugin.abstractitems.items;
 import com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import me.cat.itemsplugin.Helper;
 import me.cat.itemsplugin.ItemsPlugin;
 import me.cat.itemsplugin.abstractitems.abstraction.AbstractItem;
 import net.kyori.adventure.text.Component;
@@ -10,6 +11,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Particle;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,6 +28,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class PassengerEnderPearlItem extends AbstractItem implements Listener {
 
@@ -34,7 +37,7 @@ public class PassengerEnderPearlItem extends AbstractItem implements Listener {
             "passenger_ender_pearl",
             ItemsPlugin.getInstance()
     ));
-    private static final long DESPAWN_SECONDS = 10L;
+    private static final long DESPAWN_SECONDS = 30L;
     private static final int OFFHAND_SLOT_NUMBER = 40;
     private Player thrower;
     private final List<EnderPearl> activeEnderPearls;
@@ -51,6 +54,7 @@ public class PassengerEnderPearlItem extends AbstractItem implements Listener {
                         .addData(PASSENGER_ENDER_PEARL_TAG, PersistentDataType.BOOLEAN, true)
                         .setDisplayName(Component.text("Passenger Ender Pearl", NamedTextColor.YELLOW))
                         .setLore(List.of(
+                                Component.empty(),
                                 Component.text("???", NamedTextColor.GRAY)
                         ))
         );
@@ -79,7 +83,23 @@ public class PassengerEnderPearlItem extends AbstractItem implements Listener {
             enderPearlEntity.addPassenger(player);
             activeEnderPearls.add(enderPearlEntity);
 
+            AtomicInteger ticksPassed = new AtomicInteger();
+            AtomicInteger enderPearlSecondsAlive = new AtomicInteger();
             Bukkit.getServer().getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
+                ticksPassed.getAndIncrement();
+                if (ticksPassed.get() % 20 == 0) {
+                    enderPearlSecondsAlive.getAndIncrement();
+                }
+
+                if (!enderPearlEntity.isValid()) {
+                    task.cancel();
+                }
+
+                if (enderPearlSecondsAlive.get() >= DESPAWN_SECONDS) {
+                    Helper.removeEntitiesInStyle(Particle.SONIC_BOOM, 1, enderPearlEntity);
+                    task.cancel();
+                }
+
                 activeEnderPearls.stream()
                         .filter(activeEnderPearlEntity -> activeEnderPearlEntity.getPassengers().isEmpty())
                         .forEach(EnderPearl::remove);
@@ -103,7 +123,7 @@ public class PassengerEnderPearlItem extends AbstractItem implements Listener {
     @EventHandler
     public void onOffhandSwitch(PlayerSwapHandItemsEvent event) {
         if (event.getOffHandItem().getItemMeta().getPersistentDataContainer().has(PASSENGER_ENDER_PEARL_TAG)) {
-            event.getPlayer().sendMessage(Component.text("You can't swap this item!", NamedTextColor.RED));
+            event.getPlayer().sendMessage(Component.text("Can't swap this item!", NamedTextColor.RED));
             event.setCancelled(true);
         }
     }
@@ -121,10 +141,10 @@ public class PassengerEnderPearlItem extends AbstractItem implements Listener {
                         return;
                     }
                     if (itemOnCursor.getItemMeta().getPersistentDataContainer().has(PASSENGER_ENDER_PEARL_TAG)) {
-                        player.sendMessage(Component.text("You can't do that!", NamedTextColor.RED));
+                        player.sendMessage(Component.text("Can't do that!", NamedTextColor.RED));
                         event.setCancelled(true);
 
-                        event.setCursor(null);
+                        player.getOpenInventory().setCursor(null);
                         player.getInventory().addItem(getBuilder().toItemStack());
                     }
                 }

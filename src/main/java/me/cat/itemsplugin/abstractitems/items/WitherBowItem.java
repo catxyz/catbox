@@ -45,6 +45,7 @@ public class WitherBowItem extends AbstractItem implements Listener {
                         .addData(WITHER_BOW_ARROW_TAG, PersistentDataType.BOOLEAN, true)
                         .setDisplayName(Component.text("Wither Bow", NamedTextColor.BLUE))
                         .setLore(List.of(
+                                Component.empty(),
                                 Component.text("Dead inside!", NamedTextColor.GRAY)
                         ))
         );

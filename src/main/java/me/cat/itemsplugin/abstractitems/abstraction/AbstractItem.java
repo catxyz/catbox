@@ -6,7 +6,6 @@ import com.google.common.collect.Maps;
 import me.cat.itemsplugin.Helper;
 import me.cat.itemsplugin.ItemsPlugin;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
@@ -51,11 +50,12 @@ public abstract class AbstractItem {
         private String itemId = UUID.randomUUID().toString().replace("-", "");
         private Material material = Material.STONE;
         private Map<Enchantment, Integer> enchants = Maps.newHashMap();
-        private TextComponent displayName = Component.text(UUID.randomUUID().toString().replace("-", ""));
-        private List<TextComponent> lore = Lists.newArrayList();
+        private Component displayName = Component.text(UUID.randomUUID().toString().replace("-", ""));
+        private List<Component> lore = Lists.newArrayList();
         private boolean unbreakableItem = true;
         private List<ItemFlag> itemFlags = Lists.newArrayList();
         private Duration useCooldown = Duration.ofSeconds(1L);
+        private boolean showCooldownLoreLine = true;
 
         public AbstractItemBuilder setUseActions(List<Action> useActions) {
             this.useActions = useActions;
@@ -85,12 +85,12 @@ public abstract class AbstractItem {
             return this;
         }
 
-        public AbstractItemBuilder setDisplayName(TextComponent displayName) {
+        public AbstractItemBuilder setDisplayName(Component displayName) {
             this.displayName = displayName;
             return this;
         }
 
-        public AbstractItemBuilder setLore(List<TextComponent> lore) {
+        public AbstractItemBuilder setLore(List<Component> lore) {
             this.lore = lore;
             return this;
         }
@@ -110,6 +110,11 @@ public abstract class AbstractItem {
             return this;
         }
 
+        public AbstractItemBuilder setShowCooldownLoreLine(boolean showCooldownLoreLine) {
+            this.showCooldownLoreLine = showCooldownLoreLine;
+            return this;
+        }
+
         public PersistentDataContainer getPersistentDataContainer() {
             return persistentDataContainer;
         }
@@ -119,13 +124,15 @@ public abstract class AbstractItem {
 
             itemMeta.displayName(displayName.decoration(TextDecoration.ITALIC, false));
 
-            List<TextComponent> correctedLore = Lists.newArrayList(lore);
-            correctedLore.add(Component.empty());
-            correctedLore.add(Component.empty());
-            correctedLore.add(Component.text("Cooldown", NamedTextColor.WHITE, TextDecoration.BOLD));
-            correctedLore.add(Component.text(Helper.formatDuration(useCooldown), NamedTextColor.WHITE));
+            List<Component> additionalLore = Lists.newArrayList(lore);
+            if (showCooldownLoreLine) {
+                additionalLore.add(Component.empty());
+                additionalLore.add(Component.text("Cooldown -> ", NamedTextColor.DARK_GRAY)
+                        .append(Component.text(Helper.formatDuration(useCooldown), NamedTextColor.YELLOW)));
+            }
+            additionalLore.add(Component.empty());
 
-            itemMeta.lore(correctedLore.stream()
+            itemMeta.lore(additionalLore.stream()
                     .map(component -> {
                         if (component.hasDecoration(TextDecoration.BOLD)) {
                             return component.decoration(TextDecoration.ITALIC, false);
@@ -172,11 +179,11 @@ public abstract class AbstractItem {
             return enchants;
         }
 
-        public TextComponent getDisplayName() {
+        public Component getDisplayName() {
             return displayName;
         }
 
-        public List<TextComponent> getLore() {
+        public List<Component> getLore() {
             return lore;
         }
 
@@ -190,6 +197,10 @@ public abstract class AbstractItem {
 
         public Duration getUseCooldown() {
             return useCooldown;
+        }
+
+        public boolean showCooldownLoreLine() {
+            return showCooldownLoreLine;
         }
     }
 

@@ -37,13 +37,13 @@ public class AbstractItemManager {
     }
 
     private void registerAbstractItems() {
-        addAbstractItem(new LightWandItem());
+        addAbstractItem(new ColorStaffItem());
         addAbstractItem(new MyPreciousItem());
         addAbstractItem(new PassengerEnderPearlItem());
         addAbstractItem(new DestructorBowItem());
         addAbstractItem(new TestificateSpawnerItem());
         addAbstractItem(new WitherBowItem());
-        addAbstractItem(new WorldCorrupterItem());
+        addAbstractItem(new CorrupterItem());
     }
 
     private void mapItemIdAndStack() {

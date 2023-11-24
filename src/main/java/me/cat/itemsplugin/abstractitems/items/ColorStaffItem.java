@@ -21,12 +21,12 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class LightWandItem extends AbstractItem {
+public class ColorStaffItem extends AbstractItem {
 
     private static final long DESPAWN_SECONDS = 3L;
     private Player shooter;
 
-    public LightWandItem() {
+    public ColorStaffItem() {
         super(
                 new AbstractItemBuilder()
                         .setUseActions(List.of(
@@ -35,12 +35,13 @@ public class LightWandItem extends AbstractItem {
                                 Action.LEFT_CLICK_AIR,
                                 Action.LEFT_CLICK_BLOCK
                         ))
-                        .setItemId("light_wand")
+                        .setItemId("color_staff")
                         .setUseCooldown(Duration.ofMillis(1_500L))
                         .setMaterial(Material.BLAZE_ROD)
-                        .setDisplayName(Component.text("Light Wand", NamedTextColor.GOLD))
+                        .setDisplayName(Helper.makeComponentColorful(Component.text("Color Staff")))
                         .setLore(List.of(
-                                Component.text("All the colors of light!", NamedTextColor.LIGHT_PURPLE)
+                                Component.empty(),
+                                Helper.makeComponentColorful(Component.text("All the colors of light!"))
                         ))
         );
     }

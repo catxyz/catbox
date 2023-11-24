@@ -1,8 +1,10 @@
 package me.cat.itemsplugin;
 
+import io.papermc.paper.event.player.AsyncChatEvent;
 import me.cat.itemsplugin.abstractitems.manager.AbstractItemManager;
 import me.cat.itemsplugin.abstractitems.manager.CooldownManager;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -114,6 +116,11 @@ public class ItemsPlugin extends JavaPlugin implements Listener {
                 return List.of();
             }
         });
+    }
+
+    @EventHandler
+    public void onChat(AsyncChatEvent event) {
+        event.message(Helper.makeComponentColorful((TextComponent) event.message()));
     }
 
     @EventHandler

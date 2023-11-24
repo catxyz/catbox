@@ -26,33 +26,34 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class WorldCorrupterItem extends AbstractItem implements Listener {
+public class CorrupterItem extends AbstractItem implements Listener {
 
-    private static final NamespacedKey WORLD_CORRUPTER_TRIDENT_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
-            "world_corrupter_trident",
+    private static final NamespacedKey CORRUPTER_TRIDENT_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
+            "corrupter_trident",
             ItemsPlugin.getInstance()
     ));
 
-    public WorldCorrupterItem() {
+    public CorrupterItem() {
         super(
                 new AbstractItemBuilder()
                         .setUseActions(List.of(
                                 Action.RIGHT_CLICK_AIR,
                                 Action.RIGHT_CLICK_BLOCK
                         ))
-                        .setItemId("world_corrupter")
+                        .setItemId("corrupter")
                         .setUseCooldown(Duration.ZERO)
                         .setMaterial(Material.TRIDENT)
                         .setEnchants(Map.of(
                                 Enchantment.LOYALTY, 5
                         ))
-                        .addData(WORLD_CORRUPTER_TRIDENT_TAG, PersistentDataType.BOOLEAN, true)
+                        .addData(CORRUPTER_TRIDENT_TAG, PersistentDataType.BOOLEAN, true)
                         .setItemFlags(List.of(
                                 ItemFlag.HIDE_ENCHANTS,
                                 ItemFlag.HIDE_ATTRIBUTES
                         ))
-                        .setDisplayName(Component.text("World Corrupter", NamedTextColor.RED))
+                        .setDisplayName(Component.text("Corrupter", NamedTextColor.YELLOW))
                         .setLore(List.of(
+                                Component.empty(),
                                 Component.text("???", NamedTextColor.GRAY)
                         ))
         );
@@ -65,7 +66,7 @@ public class WorldCorrupterItem extends AbstractItem implements Listener {
     @EventHandler
     public void onPlayerLaunchProjectile(PlayerLaunchProjectileEvent event) {
         ItemStack trident = event.getItemStack();
-        if (trident.getItemMeta().getPersistentDataContainer().has(WORLD_CORRUPTER_TRIDENT_TAG)) {
+        if (trident.getItemMeta().getPersistentDataContainer().has(CORRUPTER_TRIDENT_TAG)) {
             Trident tridentEntity = (Trident) event.getProjectile();
 
             Bukkit.getServer().getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
@@ -74,8 +75,9 @@ public class WorldCorrupterItem extends AbstractItem implements Listener {
                             tridentEntity.getWorld(),
                             tridentEntity.getLocation(),
                             ThreadLocalRandom.current().nextInt(5, 10),
-                            Arrays.stream(Material.values()).toList(),
-                            affectedBlocks -> affectedBlocks.forEach(block -> tridentEntity.getWorld().strikeLightningEffect(block.getLocation()))
+                            Arrays.stream(Material.values()).filter(material -> material.name().endsWith("_WOOL")).toList(),
+                            affectedBlocks -> affectedBlocks.forEach(
+                                    block -> tridentEntity.getWorld().strikeLightningEffect(block.getLocation()))
                     );
                     task.cancel();
                 }
