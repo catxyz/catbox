@@ -23,8 +23,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ColorStaffItem extends AbstractItem {
 
+    private static final List<Material> HEAD_COLORS;
     private static final long DESPAWN_SECONDS = 3L;
     private Player shooter;
+
+    static {
+        HEAD_COLORS = Arrays.stream(Material.values())
+                .filter(material -> material.name().endsWith("_CONCRETE"))
+                .toList();
+    }
 
     public ColorStaffItem() {
         super(
@@ -55,15 +62,12 @@ public class ColorStaffItem extends AbstractItem {
         player.sendMessage(Component.text("pew!", NamedTextColor.GRAY));
         player.playSound(player.getLocation(), Sound.ENTITY_CAT_AMBIENT, 10f, 1f);
 
-        List<Material> headColors = Arrays.stream(Material.values())
-                .filter(material -> material.name().endsWith("_CONCRETE"))
-                .toList();
         player.getWorld().spawn(player.getEyeLocation().clone().subtract(0.0d, 0.2d, 0.0d), ArmorStand.class, armorStand -> {
             armorStand.setSmall(true);
             armorStand.setGravity(false);
             armorStand.setVisible(false);
             armorStand.getEquipment()
-                    .setHelmet(new ItemStack(headColors.get(ThreadLocalRandom.current().nextInt(headColors.size()))));
+                    .setHelmet(new ItemStack(HEAD_COLORS.get(ThreadLocalRandom.current().nextInt(HEAD_COLORS.size()))));
 
             Bukkit.getServer().getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
                 if (!armorStand.isValid()) {

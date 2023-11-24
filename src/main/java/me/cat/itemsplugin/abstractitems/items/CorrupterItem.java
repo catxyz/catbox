@@ -28,10 +28,17 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class CorrupterItem extends AbstractItem implements Listener {
 
+    private static final List<Material> CORRUPTED_MATERIALS;
     private static final NamespacedKey CORRUPTER_TRIDENT_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
             "corrupter_trident",
             ItemsPlugin.getInstance()
     ));
+
+    static {
+        CORRUPTED_MATERIALS = Arrays.stream(Material.values())
+                .filter(material -> material.name().endsWith("_WOOL"))
+                .toList();
+    }
 
     public CorrupterItem() {
         super(
@@ -75,7 +82,7 @@ public class CorrupterItem extends AbstractItem implements Listener {
                             tridentEntity.getWorld(),
                             tridentEntity.getLocation(),
                             ThreadLocalRandom.current().nextInt(5, 10),
-                            Arrays.stream(Material.values()).filter(material -> material.name().endsWith("_WOOL")).toList(),
+                            CORRUPTED_MATERIALS,
                             affectedBlocks -> affectedBlocks.forEach(
                                     block -> tridentEntity.getWorld().strikeLightningEffect(block.getLocation()))
                     );
