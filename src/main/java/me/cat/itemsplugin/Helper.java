@@ -30,7 +30,7 @@ public class Helper {
     }
 
     public static Component getPlayActivatedMessageComponent(Component content) {
-        return Component.text("Activated -> ", NamedTextColor.GREEN)
+        return Component.text("Active -> ", NamedTextColor.GREEN)
                 .append(content)
                 .append(Component.text('!', NamedTextColor.GREEN));
     }
@@ -89,6 +89,7 @@ public class Helper {
 
     public static void createSurfaceLayer(World world, Location center, int radius,
                                           List<Material> materials,
+                                          boolean useFakeBlocks,
                                           Consumer<List<Block>> affectedBlocks) {
         int centerX = center.getBlockX();
         int centerZ = center.getBlockZ();
@@ -106,9 +107,12 @@ public class Helper {
                     if (block.getType() != Material.AIR && !block.isLiquid()) {
                         Material material = materials.get(ThreadLocalRandom.current().nextInt(materials.size()));
                         if (material.isBlock() && !material.isLegacy()) {
-                            //block.setType(material);
-                            for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-                                player.sendBlockChange(block.getLocation(), material.createBlockData());
+                            if (useFakeBlocks) {
+                                for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+                                    player.sendBlockChange(block.getLocation(), material.createBlockData());
+                                }
+                            } else {
+                                block.setType(material);
                             }
 
                             affected.add(block);

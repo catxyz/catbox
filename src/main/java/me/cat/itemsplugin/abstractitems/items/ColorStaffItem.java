@@ -43,7 +43,7 @@ public class ColorStaffItem extends AbstractItem {
                                 Action.LEFT_CLICK_BLOCK
                         ))
                         .setItemId("color_staff")
-                        .setUseCooldown(Duration.ofMillis(1_500L))
+                        .setUseCooldown(Duration.ofMillis(500L))
                         .setMaterial(Material.BLAZE_ROD)
                         .setDisplayName(Helper.makeComponentColorful(Component.text("Color Staff")))
                         .setLore(List.of(
@@ -78,7 +78,7 @@ public class ColorStaffItem extends AbstractItem {
                 Vector vec = armorStandLocation.getDirection();
                 armorStand.setHeadPose(armorStand.getHeadPose().add(0.0d, 1.0d, 0.0d));
                 armorStand.teleport(armorStandLocation.add(vec));
-            }, 0L, 0L);
+            }, 0L, 1L);
             spawnFireworkOnGroundHit(armorStand);
 
             runKillEntitiesAroundArmorStandTask(armorStand);
@@ -136,7 +136,7 @@ public class ColorStaffItem extends AbstractItem {
                         2 * 20,
                         1,
                         true,
-                        false,
+                        true,
                         false
                 ));
                 livingEntity.damage(damageToDeal);

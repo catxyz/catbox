@@ -73,8 +73,8 @@ public class AbstractItemManager {
     public void addAbstractItem(AbstractItem abstractItem) {
         if (!isItemRegistered(abstractItem)) {
             registeredItems.add(abstractItem);
-            if (abstractItem instanceof Listener itemListener) {
-                plugin.registerEvents(itemListener);
+            if (abstractItem instanceof Listener itemSelfListener) {
+                plugin.registerEvents(itemSelfListener);
             }
             plugin.getLogger().info("Abstract item '" + abstractItem.getBuilder().getItemId() + "' registered!");
         }

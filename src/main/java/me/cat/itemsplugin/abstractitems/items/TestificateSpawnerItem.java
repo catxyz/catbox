@@ -33,7 +33,9 @@ public class TestificateSpawnerItem extends AbstractItem {
                 new AbstractItemBuilder()
                         .setUseActions(List.of(
                                 Action.RIGHT_CLICK_AIR,
-                                Action.RIGHT_CLICK_BLOCK
+                                Action.RIGHT_CLICK_BLOCK,
+                                Action.LEFT_CLICK_AIR,
+                                Action.LEFT_CLICK_BLOCK
                         ))
                         .setItemId("testificate_spawner")
                         .setMaterial(Material.SPAWNER)

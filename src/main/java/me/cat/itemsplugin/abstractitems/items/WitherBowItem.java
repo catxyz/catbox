@@ -6,10 +6,7 @@ import me.cat.itemsplugin.ItemsPlugin;
 import me.cat.itemsplugin.abstractitems.abstraction.AbstractItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.WitherSkull;
 import org.bukkit.event.EventHandler;
@@ -63,6 +60,7 @@ public class WitherBowItem extends AbstractItem implements Listener {
                 if (bow.getItemMeta().getPersistentDataContainer().has(WITHER_BOW_ARROW_TAG)) {
                     event.getProjectile().remove();
 
+                    player.playSound(player.getEyeLocation(), Sound.ENTITY_WITHER_SHOOT, 10f, 1.6f);
                     player.getWorld().spawn(player.getEyeLocation(), WitherSkull.class, witherSkull -> {
                         AtomicInteger witherSkullSecondsAlive = new AtomicInteger();
 

@@ -1,10 +1,8 @@
 package me.cat.itemsplugin;
 
-import io.papermc.paper.event.player.AsyncChatEvent;
 import me.cat.itemsplugin.abstractitems.manager.AbstractItemManager;
 import me.cat.itemsplugin.abstractitems.manager.CooldownManager;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -73,8 +71,31 @@ public class ItemsPlugin extends JavaPlugin implements Listener {
                     return false;
                 }
 
-                abstractItemManager.giveAllItems(player);
+                if (args.length == 1) {
+                    Player targetPlayer = Bukkit.getPlayerExact(args[0]);
+                    if (targetPlayer == null) {
+                        player.sendMessage(Component.text("Invalid target player!", NamedTextColor.RED));
+                    } else {
+                        player.sendMessage(Component.text("Gave all items to player ", NamedTextColor.GREEN)
+                                .append(targetPlayer.name().color(NamedTextColor.YELLOW))
+                                .append(Component.text('!', NamedTextColor.GREEN)));
+
+                        targetPlayer.getInventory().clear();
+                        abstractItemManager.giveAllItems(targetPlayer);
+                    }
+                } else {
+                    player.getInventory().clear();
+                    abstractItemManager.giveAllItems(player);
+                }
                 return true;
+            }
+
+            @Override
+            public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
+                return Bukkit.getServer().getOnlinePlayers()
+                        .stream()
+                        .map(Player::getName)
+                        .toList();
             }
         });
 
@@ -119,11 +140,6 @@ public class ItemsPlugin extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onChat(AsyncChatEvent event) {
-        event.message(Helper.makeComponentColorful((TextComponent) event.message()));
-    }
-
-    @EventHandler
     public void onArmorStandManipulate(PlayerArmorStandManipulateEvent event) {
         event.setCancelled(true);
     }
@@ -140,8 +156,10 @@ public class ItemsPlugin extends JavaPlugin implements Listener {
         }
     }
 
-    public void registerEvents(Listener listener) {
-        getServer().getPluginManager().registerEvents(listener, this);
+    public void registerEvents(Listener... listeners) {
+        for (Listener listener : listeners) {
+            getServer().getPluginManager().registerEvents(listener, this);
+        }
     }
 
     public void setAbilitiesDisabled(boolean abilitiesDisabled) {

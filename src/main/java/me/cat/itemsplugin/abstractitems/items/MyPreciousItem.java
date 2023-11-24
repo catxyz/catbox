@@ -22,9 +22,8 @@ public class MyPreciousItem extends AbstractItem {
                                 Action.RIGHT_CLICK_BLOCK
                         ))
                         .setItemId("my_precious")
-                        .setShowCooldownLoreLine(false)
                         .setMaterial(Material.EMERALD)
-                        .setDisplayName(Component.text("My Precious", NamedTextColor.BLUE))
+                        .setDisplayName(Component.text("My Precious", NamedTextColor.LIGHT_PURPLE))
                         .setLore(List.of(
                                 Component.empty(),
                                 Component.text("They stole it from us.", NamedTextColor.GRAY, TextDecoration.ITALIC),

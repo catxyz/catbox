@@ -83,6 +83,7 @@ public class CorrupterItem extends AbstractItem implements Listener {
                             tridentEntity.getLocation(),
                             ThreadLocalRandom.current().nextInt(5, 10),
                             CORRUPTED_MATERIALS,
+                            true,
                             affectedBlocks -> affectedBlocks.forEach(
                                     block -> tridentEntity.getWorld().strikeLightningEffect(block.getLocation()))
                     );
