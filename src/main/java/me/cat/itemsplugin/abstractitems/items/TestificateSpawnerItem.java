@@ -17,7 +17,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class TestificateSpawnerItem extends AbstractItem {
 
-    private static final String[] TESTIFICATE_NAMES = new String[]{
+    public static final String[] TESTIFICATE_NAMES = new String[]{
             "jerry",
             "barbie",
             "ken",
@@ -73,7 +73,7 @@ public class TestificateSpawnerItem extends AbstractItem {
                 player.sendMessage(Component.text("Invalid location!", NamedTextColor.RED));
                 return;
             }
-            player.getWorld().spawn(playerTargetBlock.getLocation(), Villager.class, villager -> {
+            player.getWorld().spawn(playerTargetBlock.getLocation().clone().add(0, 1, 0), Villager.class, villager -> {
                 villager.setCustomNameVisible(true);
                 villager.customName(Component.text(currentRandomName, currentRandomColor));
             });

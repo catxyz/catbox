@@ -1,8 +1,8 @@
 package me.cat.itemsplugin.abstractitems.manager;
 
-import me.cat.itemsplugin.Helper;
 import me.cat.itemsplugin.ItemsPlugin;
 import me.cat.itemsplugin.abstractitems.abstraction.AbstractItem;
+import me.cat.itemsplugin.helpers.Helper;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;

@@ -1,18 +1,30 @@
 package me.cat.itemsplugin.abstractitems.items;
 
+import me.cat.itemsplugin.ItemsPlugin;
 import me.cat.itemsplugin.abstractitems.abstraction.AbstractItem;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.title.Title;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class MyPreciousItem extends AbstractItem {
+
+    private boolean isSoundEffectPlaying = false;
 
     public MyPreciousItem() {
         super(
@@ -34,13 +46,87 @@ public class MyPreciousItem extends AbstractItem {
 
     @Override
     public void useItemInteraction(PlayerInteractEvent event) {
-        event.getPlayer().addPotionEffect(new PotionEffect(
+        Player player = event.getPlayer();
+
+        player.addPotionEffect(new PotionEffect(
                 PotionEffectType.DARKNESS,
-                5 * 20,
+                10 * 20,
                 255,
                 false,
                 true,
                 false
         ));
+
+        if (!isSoundEffectPlaying) {
+            AtomicLong soundDelay = new AtomicLong(0L);
+            new BukkitRunnable() {
+                float pitch = 0f;
+                final TextComponent subtitle = Component.text("doesn't like you!", NamedTextColor.RED);
+
+                @Override
+                public void run() {
+                    int randVillagerNameIndex = ThreadLocalRandom.current().nextInt(TestificateSpawnerItem.TESTIFICATE_NAMES.length);
+                    String chosenVillager = TestificateSpawnerItem.TESTIFICATE_NAMES[randVillagerNameIndex];
+
+                    if (pitch >= 2f) {
+                        player.showTitle(Title.title(
+                                Component.text(chosenVillager, NamedTextColor.YELLOW),
+                                subtitle,
+                                Title.Times.times(
+                                        Duration.ZERO,
+                                        Duration.ofMillis(2_500L),
+                                        Duration.ofMillis(500L)
+                                )
+                        ));
+
+                        Bukkit.getServer().getScheduler().runTaskLater(ItemsPlugin.getInstance(), () ->
+                                player.showTitle(Title.title(
+                                        Component.empty(),
+                                        Component.text("goodbye", NamedTextColor.GREEN),
+                                        Title.Times.times(
+                                                Duration.ZERO,
+                                                Duration.ofSeconds(1L),
+                                                Duration.ZERO
+                                        )
+                                )), (1_500L * 20L) / 1_000L);
+
+                        player.addPotionEffect(new PotionEffect(
+                                PotionEffectType.LEVITATION,
+                                10 * 20,
+                                127,
+                                false,
+                                true,
+                                false
+                        ));
+                        player.playSound(player.getLocation(), Sound.ENTITY_ILLUSIONER_CAST_SPELL, 10f, 0f);
+
+                        Bukkit.getServer().getScheduler().runTaskLater(ItemsPlugin.getInstance(),
+                                () -> player.setHealth(0.0d),
+                                (3_000L * 20L) / 1_000L);
+
+                        isSoundEffectPlaying = false;
+                        this.cancel();
+                    }
+                    if (soundDelay.get() % 20L == 0L) {
+                        player.showTitle(Title.title(
+                                Component.text("villager ")
+                                        .append(Component.text(chosenVillager, NamedTextColor.YELLOW)),
+                                subtitle,
+                                Title.Times.times(
+                                        Duration.ZERO,
+                                        Duration.ofMillis(2_500L),
+                                        Duration.ofMillis(500L)
+                                )
+                        ));
+
+                        player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_TRADE, 10f, pitch);
+                        pitch += 0.1f;
+                    }
+                    soundDelay.getAndAdd(5L);
+                }
+            }.runTaskTimer(ItemsPlugin.getInstance(), 0L, 1L);
+
+            isSoundEffectPlaying = true;
+        }
     }
 }

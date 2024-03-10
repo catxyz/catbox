@@ -1,16 +1,16 @@
 package me.cat.itemsplugin.abstractitems.items;
 
 import com.google.common.base.Preconditions;
-import me.cat.itemsplugin.Helper;
 import me.cat.itemsplugin.ItemsPlugin;
 import me.cat.itemsplugin.abstractitems.abstraction.AbstractItem;
+import me.cat.itemsplugin.helpers.Helper;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
-import org.bukkit.entity.Arrow;
+import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
@@ -26,29 +26,29 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class DestructorBowItem extends AbstractItem implements Listener {
+public class ExplosiveToyBowItem extends AbstractItem implements Listener {
 
-    private static final NamespacedKey REMOTE_BOMB_ARROW_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
-            "destructor_bow_arrow",
+    private static final NamespacedKey EXPLOSIVE_TOY_BOW_ARROW_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
+            "explosive_toy_bow_arrow",
             ItemsPlugin.getInstance()
     ));
     private static final long DESPAWN_SECONDS = 4L;
 
-    public DestructorBowItem() {
+    public ExplosiveToyBowItem() {
         super(
                 new AbstractItemBuilder()
                         .setUseActions(List.of(
                                 Action.RIGHT_CLICK_AIR,
                                 Action.RIGHT_CLICK_BLOCK
                         ))
-                        .setItemId("destructor_bow")
+                        .setItemId("explosive_toy_bow")
                         .setMaterial(Material.BOW)
-                        .addData(REMOTE_BOMB_ARROW_TAG, PersistentDataType.BOOLEAN, true)
-                        .setDisplayName(Component.text("Destruct-a-bow", NamedTextColor.GREEN))
+                        .addData(EXPLOSIVE_TOY_BOW_ARROW_TAG, PersistentDataType.BOOLEAN, true)
+                        .setDisplayName(Component.text("Explosive Toy Bow", NamedTextColor.RED))
                         .setLore(List.of(
                                 Component.empty(),
-                                Component.text("Wouldn't it be unfortunate", NamedTextColor.GRAY),
-                                Component.text("if this were to spontaneously combust?", NamedTextColor.GRAY)
+                                Component.text("Wouldn't it be unfortunate if this bow", NamedTextColor.GRAY),
+                                Component.text("were to spontaneously combust?", NamedTextColor.GRAY)
                         ))
         );
     }
@@ -62,8 +62,8 @@ public class DestructorBowItem extends AbstractItem implements Listener {
         if (event.getEntity() instanceof Player player) {
             ItemStack bow = event.getBow();
             if (bow != null) {
-                if (bow.getItemMeta().getPersistentDataContainer().has(REMOTE_BOMB_ARROW_TAG)) {
-                    Arrow arrow = (Arrow) event.getProjectile();
+                if (bow.getItemMeta().getPersistentDataContainer().has(EXPLOSIVE_TOY_BOW_ARROW_TAG)) {
+                    AbstractArrow arrow = (AbstractArrow) event.getProjectile();
 
                     BlockDisplay blockDisplay = player.getWorld().spawn(player.getEyeLocation(), BlockDisplay.class);
                     blockDisplay.setBlock(Bukkit.createBlockData(Material.TNT));

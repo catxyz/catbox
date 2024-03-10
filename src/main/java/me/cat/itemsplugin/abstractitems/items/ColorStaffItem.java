@@ -1,8 +1,9 @@
 package me.cat.itemsplugin.abstractitems.items;
 
-import me.cat.itemsplugin.Helper;
+import com.destroystokyo.paper.MaterialTags;
 import me.cat.itemsplugin.ItemsPlugin;
 import me.cat.itemsplugin.abstractitems.abstraction.AbstractItem;
+import me.cat.itemsplugin.helpers.Helper;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
@@ -29,7 +30,7 @@ public class ColorStaffItem extends AbstractItem {
 
     static {
         HEAD_COLORS = Arrays.stream(Material.values())
-                .filter(material -> material.name().endsWith("_CONCRETE"))
+                .filter(MaterialTags.STAINED_GLASS::isTagged)
                 .toList();
     }
 
@@ -59,7 +60,7 @@ public class ColorStaffItem extends AbstractItem {
 
         this.shooter = player;
 
-        player.sendMessage(Component.text("pew!", NamedTextColor.GRAY));
+        player.sendMessage(Component.text("Pew!", NamedTextColor.GRAY));
         player.playSound(player.getLocation(), Sound.ENTITY_CAT_AMBIENT, 10f, 1f);
 
         player.getWorld().spawn(player.getEyeLocation().clone().subtract(0.0d, 0.2d, 0.0d), ArmorStand.class, armorStand -> {

@@ -1,4 +1,4 @@
-package me.cat.itemsplugin;
+package me.cat.itemsplugin.helpers;
 
 import com.google.common.collect.Lists;
 import net.kyori.adventure.text.Component;
@@ -90,7 +90,7 @@ public class Helper {
     public static void createSurfaceLayer(World world, Location center, int radius,
                                           List<Material> materials,
                                           boolean useFakeBlocks,
-                                          Consumer<List<Block>> affectedBlocks) {
+                                          Consumer<List<Block>> affectedBlocksConsumer) {
         int centerX = center.getBlockX();
         int centerZ = center.getBlockZ();
 
@@ -103,7 +103,7 @@ public class Helper {
                     Location loc = new Location(world, x, y, z);
                     Block block = loc.getBlock();
 
-                    List<Block> affected = Lists.newArrayList();
+                    List<Block> affectedBlocksList = Lists.newArrayList();
                     if (block.getType() != Material.AIR && !block.isLiquid()) {
                         Material material = materials.get(ThreadLocalRandom.current().nextInt(materials.size()));
                         if (material.isBlock() && !material.isLegacy()) {
@@ -115,9 +115,9 @@ public class Helper {
                                 block.setType(material);
                             }
 
-                            affected.add(block);
+                            affectedBlocksList.add(block);
 
-                            affectedBlocks.accept(affected);
+                            affectedBlocksConsumer.accept(affectedBlocksList);
                         }
                     }
                 }

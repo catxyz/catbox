@@ -2,10 +2,10 @@ package me.cat.itemsplugin.abstractitems.manager;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import me.cat.itemsplugin.Helper;
 import me.cat.itemsplugin.ItemsPlugin;
 import me.cat.itemsplugin.abstractitems.abstraction.AbstractItem;
 import me.cat.itemsplugin.abstractitems.items.*;
+import me.cat.itemsplugin.helpers.Helper;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -38,12 +38,13 @@ public class AbstractItemManager {
 
     private void registerAbstractItems() {
         addAbstractItem(new ColorStaffItem());
+        addAbstractItem(new CorrupterItem());
+        addAbstractItem(new ExplosiveToyBowItem());
         addAbstractItem(new MyPreciousItem());
         addAbstractItem(new PassengerEnderPearlItem());
-        addAbstractItem(new DestructorBowItem());
         addAbstractItem(new TestificateSpawnerItem());
-        addAbstractItem(new WitherBowItem());
-        addAbstractItem(new CorrupterItem());
+        addAbstractItem(new TimeShifterItem());
+        addAbstractItem(new UndeadBowItem());
     }
 
     private void mapItemIdAndStack() {
@@ -76,7 +77,7 @@ public class AbstractItemManager {
             if (abstractItem instanceof Listener itemSelfListener) {
                 plugin.registerEvents(itemSelfListener);
             }
-            plugin.getLogger().info("Abstract item '" + abstractItem.getBuilder().getItemId() + "' registered!");
+            plugin.getLogger().info("-> '" + abstractItem.getBuilder().getItemId() + "' registered!");
         }
     }
 
