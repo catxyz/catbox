@@ -1,8 +1,8 @@
 package me.cat.toybox;
 
+import me.cat.toybox.helpers.Helper;
 import me.cat.toybox.impl.managers.AbstractItemManager;
 import me.cat.toybox.impl.managers.CooldownManager;
-import me.cat.toybox.helpers.Helper;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;

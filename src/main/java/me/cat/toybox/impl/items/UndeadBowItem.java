@@ -2,8 +2,8 @@ package me.cat.toybox.impl.items;
 
 import com.google.common.base.Preconditions;
 import me.cat.toybox.ToyboxPlugin;
-import me.cat.toybox.impl.abstraction.AbstractItem;
 import me.cat.toybox.helpers.Helper;
+import me.cat.toybox.impl.abstraction.AbstractItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
