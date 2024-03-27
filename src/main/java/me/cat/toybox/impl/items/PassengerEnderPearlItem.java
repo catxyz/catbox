@@ -1,11 +1,11 @@
-package me.cat.itemsplugin.abstractitems.items;
+package me.cat.toybox.impl.items;
 
 import com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import me.cat.itemsplugin.ItemsPlugin;
-import me.cat.itemsplugin.abstractitems.abstraction.AbstractItem;
-import me.cat.itemsplugin.helpers.Helper;
+import me.cat.toybox.ToyboxPlugin;
+import me.cat.toybox.impl.abstraction.AbstractItem;
+import me.cat.toybox.helpers.Helper;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -35,7 +35,7 @@ public class PassengerEnderPearlItem extends AbstractItem implements Listener {
     private static final String PASSENGER_ENDER_PEARL_ITEM_ID = "passenger_ender_pearl";
     private static final NamespacedKey PASSENGER_ENDER_PEARL_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
             "passenger_ender_pearl",
-            ItemsPlugin.getInstance()
+            ToyboxPlugin.getInstance()
     ));
     private static final long DESPAWN_SECONDS = 30L;
     private static final int OFFHAND_SLOT_NUMBER = 40;
@@ -74,7 +74,7 @@ public class PassengerEnderPearlItem extends AbstractItem implements Listener {
         ItemStack enderPearl = event.getItemStack();
 
         if (enderPearl.getItemMeta().getPersistentDataContainer().has(PASSENGER_ENDER_PEARL_TAG)) {
-            Bukkit.getServer().getScheduler().runTask(ItemsPlugin.getInstance(),
+            Bukkit.getServer().getScheduler().runTask(ToyboxPlugin.getInstance(),
                     () -> player.getInventory().setItemInMainHand(getBuilder().toItemStack()));
 
             EnderPearl enderPearlEntity = (EnderPearl) event.getProjectile();
@@ -85,7 +85,7 @@ public class PassengerEnderPearlItem extends AbstractItem implements Listener {
 
             AtomicInteger ticksPassed = new AtomicInteger();
             AtomicInteger enderPearlSecondsAlive = new AtomicInteger();
-            Bukkit.getServer().getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
+            Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.getInstance(), (task) -> {
                 ticksPassed.getAndIncrement();
                 if (ticksPassed.get() % 20 == 0) {
                     enderPearlSecondsAlive.getAndIncrement();
@@ -153,7 +153,7 @@ public class PassengerEnderPearlItem extends AbstractItem implements Listener {
     }
 
     private void checkForBadEnderPearls() {
-        Bukkit.getServer().getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
+        Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.getInstance(), (task) -> {
             for (Player player : Bukkit.getServer().getOnlinePlayers()) {
                 PlayerInventory playerInventory = player.getInventory();
                 ItemStack offHandItem = playerInventory.getItemInOffHand();

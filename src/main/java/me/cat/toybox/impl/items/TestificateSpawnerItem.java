@@ -1,6 +1,6 @@
-package me.cat.itemsplugin.abstractitems.items;
+package me.cat.toybox.impl.items;
 
-import me.cat.itemsplugin.abstractitems.abstraction.AbstractItem;
+import me.cat.toybox.impl.abstraction.AbstractItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;

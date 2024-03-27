@@ -1,7 +1,7 @@
-package me.cat.itemsplugin.abstractitems.items;
+package me.cat.toybox.impl.items;
 
-import me.cat.itemsplugin.ItemsPlugin;
-import me.cat.itemsplugin.abstractitems.abstraction.AbstractItem;
+import me.cat.toybox.ToyboxPlugin;
+import me.cat.toybox.impl.abstraction.AbstractItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -79,7 +79,7 @@ public class MyPreciousItem extends AbstractItem {
                                 )
                         ));
 
-                        Bukkit.getServer().getScheduler().runTaskLater(ItemsPlugin.getInstance(), () ->
+                        Bukkit.getServer().getScheduler().runTaskLater(ToyboxPlugin.getInstance(), () ->
                                 player.showTitle(Title.title(
                                         Component.empty(),
                                         Component.text("goodbye", NamedTextColor.GREEN),
@@ -100,7 +100,7 @@ public class MyPreciousItem extends AbstractItem {
                         ));
                         player.playSound(player.getLocation(), Sound.ENTITY_ILLUSIONER_CAST_SPELL, 10f, 0f);
 
-                        Bukkit.getServer().getScheduler().runTaskLater(ItemsPlugin.getInstance(),
+                        Bukkit.getServer().getScheduler().runTaskLater(ToyboxPlugin.getInstance(),
                                 () -> player.setHealth(0.0d),
                                 (3_000L * 20L) / 1_000L);
 
@@ -124,7 +124,7 @@ public class MyPreciousItem extends AbstractItem {
                     }
                     soundDelay.getAndAdd(5L);
                 }
-            }.runTaskTimer(ItemsPlugin.getInstance(), 0L, 1L);
+            }.runTaskTimer(ToyboxPlugin.getInstance(), 0L, 1L);
 
             isSoundEffectPlaying = true;
         }

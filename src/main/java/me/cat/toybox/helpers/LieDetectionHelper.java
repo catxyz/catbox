@@ -1,4 +1,4 @@
-package me.cat.itemsplugin.helpers;
+package me.cat.toybox.helpers;
 
 public class LieDetectionHelper {
 

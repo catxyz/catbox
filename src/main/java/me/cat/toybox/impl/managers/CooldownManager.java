@@ -1,0 +1,49 @@
+package me.cat.toybox.impl.managers;
+
+import com.google.common.collect.Maps;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
+
+import java.time.Duration;
+import java.util.Map;
+import java.util.UUID;
+
+public class CooldownManager implements Listener {
+
+    private final Map<UUID, Long> cooldowns;
+
+    public CooldownManager() {
+        this.cooldowns = Maps.newHashMap();
+    }
+
+    public void addToCooldown(UUID playerId) {
+        // v = current ms (start time)
+        cooldowns.computeIfAbsent(playerId, v -> System.currentTimeMillis());
+    }
+
+    public void removeFromCooldown(UUID playerId) {
+        cooldowns.remove(playerId);
+    }
+
+    public boolean isCooldownOver(UUID playerId, Duration providedCooldownDuration) {
+        Long startTime = cooldowns.get(playerId);
+        if (startTime == null) {
+            return true;
+        }
+        long futureExpirationMillis = startTime + providedCooldownDuration.toMillis();
+
+        return System.currentTimeMillis() >= futureExpirationMillis;
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        UUID playerId = event.getPlayer().getUniqueId();
+
+        removeFromCooldown(playerId);
+    }
+
+    public Map<UUID, Long> getCooldowns() {
+        return cooldowns;
+    }
+}

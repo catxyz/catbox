@@ -1,11 +1,11 @@
-package me.cat.itemsplugin.abstractitems.manager;
+package me.cat.toybox.impl.managers;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import me.cat.itemsplugin.ItemsPlugin;
-import me.cat.itemsplugin.abstractitems.abstraction.AbstractItem;
-import me.cat.itemsplugin.abstractitems.items.*;
-import me.cat.itemsplugin.helpers.Helper;
+import me.cat.toybox.ToyboxPlugin;
+import me.cat.toybox.impl.abstraction.AbstractItem;
+import me.cat.toybox.impl.items.*;
+import me.cat.toybox.helpers.Helper;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -18,11 +18,11 @@ import java.util.Optional;
 
 public class AbstractItemManager {
 
-    private final ItemsPlugin plugin;
+    private final ToyboxPlugin plugin;
     private final List<AbstractItem> registeredItems;
     private final Map<String, ItemStack> mappedItemIdAndStack;
 
-    public AbstractItemManager(ItemsPlugin plugin) {
+    public AbstractItemManager(ToyboxPlugin plugin) {
         this.plugin = plugin;
 
         this.registeredItems = Lists.newArrayList();
@@ -77,7 +77,9 @@ public class AbstractItemManager {
             if (abstractItem instanceof Listener itemSelfListener) {
                 plugin.registerEvents(itemSelfListener);
             }
-            plugin.getLogger().info("-> '" + abstractItem.getBuilder().getItemId() + "' registered!");
+
+            String itemId = abstractItem.getBuilder().getItemId();
+            plugin.getLogger().info("-> '" + itemId + "' registered!");
         }
     }
 
@@ -100,12 +102,12 @@ public class AbstractItemManager {
 
     public boolean isItemRegistered(AbstractItem otherItem) {
         return registeredItems.stream()
-                .anyMatch(item ->
-                        Objects.equals(
-                                item.getBuilder().getItemId(),
-                                otherItem.getBuilder().getItemId()
-                        )
-                );
+                .anyMatch(thisItem -> {
+                    String thisItemId = thisItem.getBuilder().getItemId();
+                    String otherItemId = otherItem.getBuilder().getItemId();
+
+                    return Objects.equals(thisItemId, otherItemId);
+                });
     }
 
     public List<AbstractItem> getRegisteredItems() {

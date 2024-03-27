@@ -1,19 +1,16 @@
-package me.cat.itemsplugin.abstractitems.items;
+package me.cat.toybox.impl.items;
 
 import com.destroystokyo.paper.MaterialSetTag;
 import com.destroystokyo.paper.MaterialTags;
 import com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent;
 import com.google.common.base.Preconditions;
-import me.cat.itemsplugin.ItemsPlugin;
-import me.cat.itemsplugin.abstractitems.abstraction.AbstractItem;
-import me.cat.itemsplugin.helpers.Helper;
+import me.cat.toybox.ToyboxPlugin;
+import me.cat.toybox.impl.abstraction.AbstractItem;
+import me.cat.toybox.helpers.Helper;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.SoundCategory;
+import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Trident;
@@ -36,9 +33,9 @@ public class CorrupterItem extends AbstractItem implements Listener {
     private static final List<Material> CORRUPTED_MATERIALS;
     private static final NamespacedKey CORRUPTER_TRIDENT_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
             "corrupter_trident",
-            ItemsPlugin.getInstance()
+            ToyboxPlugin.getInstance()
     ));
-    private static int currentCorruptionRadius = 3;
+    private static int currentCorruptionRadius = 3; // todo -> make this a PDC tag instead
 
     static {
         CORRUPTED_MATERIALS = Arrays.stream(Material.values())
@@ -106,24 +103,26 @@ public class CorrupterItem extends AbstractItem implements Listener {
         if (trident.getItemMeta().getPersistentDataContainer().has(CORRUPTER_TRIDENT_TAG)) {
             Trident tridentEntity = (Trident) event.getProjectile();
 
-            Bukkit.getServer().getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (muteLightningTask) -> {
+            Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.getInstance(), (muteLightningTask) -> {
                 if (!tridentEntity.isValid()) {
                     muteLightningTask.cancel();
                 }
                 player.stopSound(SoundCategory.WEATHER);
             }, 0L, 1L);
-            Bukkit.getServer().getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
+            Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.getInstance(), (task) -> {
                 try {
                     if (tridentEntity.isOnGround()) {
+                        World tridentWorld = tridentEntity.getWorld();
+
                         Helper.createSurfaceLayer(
-                                tridentEntity.getWorld(),
+                                tridentWorld,
                                 tridentEntity.getLocation(),
                                 currentCorruptionRadius,
                                 CORRUPTED_MATERIALS,
                                 true,
                                 affectedBlocks ->
                                         affectedBlocks.forEach(
-                                                block -> tridentEntity.getWorld().strikeLightningEffect(block.getLocation()))
+                                                block -> tridentWorld.strikeLightningEffect(block.getLocation()))
                         );
                         task.cancel();
                     }

@@ -1,9 +1,9 @@
-package me.cat.itemsplugin.abstractitems.items;
+package me.cat.toybox.impl.items;
 
 import com.google.common.base.Preconditions;
-import me.cat.itemsplugin.ItemsPlugin;
-import me.cat.itemsplugin.abstractitems.abstraction.AbstractItem;
-import me.cat.itemsplugin.helpers.Helper;
+import me.cat.toybox.ToyboxPlugin;
+import me.cat.toybox.impl.abstraction.AbstractItem;
+import me.cat.toybox.helpers.Helper;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -30,7 +30,7 @@ public class ExplosiveToyBowItem extends AbstractItem implements Listener {
 
     private static final NamespacedKey EXPLOSIVE_TOY_BOW_ARROW_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
             "explosive_toy_bow_arrow",
-            ItemsPlugin.getInstance()
+            ToyboxPlugin.getInstance()
     ));
     private static final long DESPAWN_SECONDS = 4L;
 
@@ -73,7 +73,7 @@ public class ExplosiveToyBowItem extends AbstractItem implements Listener {
 
                     AtomicInteger ticksPassed = new AtomicInteger();
                     AtomicInteger arrowSecondsAlive = new AtomicInteger();
-                    Bukkit.getServer().getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
+                    Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.getInstance(), (task) -> {
                         ticksPassed.getAndIncrement();
                         if (ticksPassed.get() % 20 == 0) {
                             arrowSecondsAlive.getAndIncrement();

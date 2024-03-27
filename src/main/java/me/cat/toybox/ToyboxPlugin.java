@@ -1,8 +1,8 @@
-package me.cat.itemsplugin;
+package me.cat.toybox;
 
-import me.cat.itemsplugin.abstractitems.manager.AbstractItemManager;
-import me.cat.itemsplugin.abstractitems.manager.CooldownManager;
-import me.cat.itemsplugin.helpers.Helper;
+import me.cat.toybox.impl.managers.AbstractItemManager;
+import me.cat.toybox.impl.managers.CooldownManager;
+import me.cat.toybox.helpers.Helper;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -21,10 +21,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class ItemsPlugin extends JavaPlugin implements Listener {
+public class ToyboxPlugin extends JavaPlugin implements Listener {
 
-    private static ItemsPlugin INSTANCE;
-    private static final String COMMAND_FALLBACK_PREFIX = "abstract";
+    private static ToyboxPlugin INSTANCE;
+    private static final String COMMAND_FALLBACK_PREFIX = "toybox";
     private static final Component COMMAND_MISSING_PERMISSION_COMPONENT = Component.text("Missing permission!", NamedTextColor.RED);
     private AbstractItemManager abstractItemManager;
     private CooldownManager cooldownManager;
@@ -36,9 +36,12 @@ public class ItemsPlugin extends JavaPlugin implements Listener {
 
         this.cooldownManager = new CooldownManager();
         this.abstractItemManager = new AbstractItemManager(this);
-        registerCommands();
 
-        Bukkit.getPluginManager().registerEvents(this, this);
+        registerCommands();
+        registerEvents(
+                this,
+                cooldownManager
+        );
     }
 
     private void registerCommands() {
@@ -140,6 +143,17 @@ public class ItemsPlugin extends JavaPlugin implements Listener {
         });
     }
 
+    public void registerEvents(Listener... listeners) {
+        for (Listener listener : listeners) {
+            getServer().getPluginManager().registerEvents(listener, this);
+        }
+    }
+
+    public void setAbilitiesDisabled(boolean abilitiesDisabled) {
+        this.abilitiesDisabled = abilitiesDisabled;
+    }
+
+    // todo -> move these to their respective classes
     @EventHandler
     public void onArmorStandManipulate(PlayerArmorStandManipulateEvent event) {
         event.setCancelled(true);
@@ -157,17 +171,7 @@ public class ItemsPlugin extends JavaPlugin implements Listener {
         }
     }
 
-    public void registerEvents(Listener... listeners) {
-        for (Listener listener : listeners) {
-            getServer().getPluginManager().registerEvents(listener, this);
-        }
-    }
-
-    public void setAbilitiesDisabled(boolean abilitiesDisabled) {
-        this.abilitiesDisabled = abilitiesDisabled;
-    }
-
-    public static ItemsPlugin getInstance() {
+    public static ToyboxPlugin getInstance() {
         return INSTANCE;
     }
 

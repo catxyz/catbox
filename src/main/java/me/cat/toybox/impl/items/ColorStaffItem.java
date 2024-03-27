@@ -1,9 +1,9 @@
-package me.cat.itemsplugin.abstractitems.items;
+package me.cat.toybox.impl.items;
 
 import com.destroystokyo.paper.MaterialTags;
-import me.cat.itemsplugin.ItemsPlugin;
-import me.cat.itemsplugin.abstractitems.abstraction.AbstractItem;
-import me.cat.itemsplugin.helpers.Helper;
+import me.cat.toybox.ToyboxPlugin;
+import me.cat.toybox.impl.abstraction.AbstractItem;
+import me.cat.toybox.helpers.Helper;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
@@ -70,7 +70,7 @@ public class ColorStaffItem extends AbstractItem {
             armorStand.getEquipment()
                     .setHelmet(new ItemStack(HEAD_COLORS.get(ThreadLocalRandom.current().nextInt(HEAD_COLORS.size()))));
 
-            Bukkit.getServer().getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
+            Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.getInstance(), (task) -> {
                 if (!armorStand.isValid()) {
                     task.cancel();
                 }
@@ -85,7 +85,7 @@ public class ColorStaffItem extends AbstractItem {
             runKillEntitiesAroundArmorStandTask(armorStand);
 
             AtomicInteger armorStandSecondsAlive = new AtomicInteger();
-            Bukkit.getServer().getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
+            Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.getInstance(), (task) -> {
                 if (!armorStand.isValid()) {
                     task.cancel();
                 }
@@ -101,7 +101,7 @@ public class ColorStaffItem extends AbstractItem {
     }
 
     private void spawnFireworkOnGroundHit(ArmorStand armorStand) {
-        Bukkit.getServer().getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
+        Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.getInstance(), (task) -> {
             Location armorStandLocation = armorStand.getLocation();
 
             if (Helper.isOnGround(armorStandLocation)) {
@@ -114,7 +114,7 @@ public class ColorStaffItem extends AbstractItem {
     }
 
     private void runKillEntitiesAroundArmorStandTask(ArmorStand armorStand) {
-        Bukkit.getServer().getScheduler().runTaskTimer(ItemsPlugin.getInstance(), (task) -> {
+        Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.getInstance(), (task) -> {
             if (!armorStand.isValid()) {
                 task.cancel();
             }

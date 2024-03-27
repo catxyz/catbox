@@ -1,10 +1,10 @@
-package me.cat.itemsplugin.abstractitems.abstraction;
+package me.cat.toybox.impl.abstraction;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import me.cat.itemsplugin.ItemsPlugin;
-import me.cat.itemsplugin.helpers.Helper;
+import me.cat.toybox.ToyboxPlugin;
+import me.cat.toybox.helpers.Helper;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -29,11 +29,11 @@ public abstract class AbstractItem {
 
     public static final NamespacedKey IS_CUSTOM_ITEM_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
             "is_custom_item",
-            ItemsPlugin.getInstance()
+            ToyboxPlugin.getInstance()
     ));
     public static final NamespacedKey CUSTOM_ITEM_ID_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
             "custom_item_id",
-            ItemsPlugin.getInstance()
+            ToyboxPlugin.getInstance()
     ));
     private final AbstractItemBuilder builder;
 

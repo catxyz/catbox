@@ -1,4 +1,4 @@
-package me.cat.itemsplugin.helpers;
+package me.cat.toybox.helpers;
 
 import com.google.common.collect.Lists;
 import net.kyori.adventure.text.Component;
@@ -94,34 +94,36 @@ public class Helper {
         int centerX = center.getBlockX();
         int centerZ = center.getBlockZ();
 
+        List<Block> affectedBlocksList = Lists.newArrayList();
+
         for (int x = centerX - radius; x <= centerX + radius; x++) {
             for (int z = centerZ - radius; z <= centerZ + radius; z++) {
                 double distance = Math.sqrt(Math.pow(x - centerX, 2.0d) + Math.pow(z - centerZ, 2.0d));
 
                 if (distance <= radius) {
                     int y = world.getHighestBlockYAt(x, z);
-                    Location loc = new Location(world, x, y, z);
-                    Block block = loc.getBlock();
+                    Location blockLocation = new Location(world, x, y, z);
 
-                    List<Block> affectedBlocksList = Lists.newArrayList();
+                    Block block = blockLocation.getBlock();
+
                     if (block.getType() != Material.AIR && !block.isLiquid()) {
-                        Material material = materials.get(ThreadLocalRandom.current().nextInt(materials.size()));
-                        if (material.isBlock() && !material.isLegacy()) {
+                        Material randMaterial = materials.get(ThreadLocalRandom.current().nextInt(materials.size()));
+
+                        if (randMaterial.isBlock() && !randMaterial.isLegacy()) {
                             if (useFakeBlocks) {
                                 for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-                                    player.sendBlockChange(block.getLocation(), material.createBlockData());
+                                    player.sendBlockChange(block.getLocation(), randMaterial.createBlockData());
                                 }
                             } else {
-                                block.setType(material);
+                                block.setType(randMaterial);
                             }
 
                             affectedBlocksList.add(block);
-
-                            affectedBlocksConsumer.accept(affectedBlocksList);
                         }
                     }
                 }
             }
         }
+        affectedBlocksConsumer.accept(affectedBlocksList);
     }
 }
