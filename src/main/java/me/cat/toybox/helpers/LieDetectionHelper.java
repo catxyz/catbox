@@ -2,9 +2,9 @@ package me.cat.toybox.helpers;
 
 public class LieDetectionHelper {
 
-    public static boolean isInt(String input) {
+    public static boolean isInt(Object value) {
         try {
-            Integer.parseInt(input);
+            Integer.parseInt(String.valueOf(value));
             return true;
         } catch (NumberFormatException ex) {
             return false;
