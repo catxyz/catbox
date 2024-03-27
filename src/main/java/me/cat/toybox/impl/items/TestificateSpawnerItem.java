@@ -73,6 +73,7 @@ public class TestificateSpawnerItem extends AbstractItem {
                 player.sendMessage(Component.text("Invalid location!", NamedTextColor.RED));
                 return;
             }
+
             player.getWorld().spawn(playerTargetBlock.getLocation().clone().add(0, 1, 0), Villager.class, villager -> {
                 villager.setCustomNameVisible(true);
                 villager.customName(Component.text(currentRandomName, currentRandomColor));

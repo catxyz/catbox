@@ -9,6 +9,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.block.sign.Side;
 import org.bukkit.entity.Player;
@@ -187,9 +188,10 @@ public class TimeShifterItem extends AbstractItem implements Listener {
     @EventHandler
     public void onCustomSignBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
+        Block block = event.getBlock();
 
-        if (MaterialTags.SIGNS.isTagged(event.getBlock())) {
-            Sign sign = (Sign) event.getBlock().getState(false);
+        if (MaterialTags.SIGNS.isTagged(block)) {
+            Sign sign = (Sign) block.getState(false);
             PersistentDataContainer signPdc = sign.getPersistentDataContainer();
 
             if (signPdc.has(IS_CUSTOM_SIGN_TAG)) {

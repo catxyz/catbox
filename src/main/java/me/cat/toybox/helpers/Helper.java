@@ -75,7 +75,8 @@ public class Helper {
         Arrays.stream(entities)
                 .map(Entity::getLocation)
                 .forEach(location -> location.getWorld().spawnParticle(particle, location, count));
-        Arrays.stream(entities).forEach(Entity::remove);
+        Arrays.stream(entities)
+                .forEach(Entity::remove);
     }
 
     public static String formatDuration(Duration duration) {
