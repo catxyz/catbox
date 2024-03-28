@@ -73,6 +73,7 @@ public class ExplosiveToyBowItem extends AbstractItem implements Listener {
 
                     AtomicInteger ticksPassed = new AtomicInteger();
                     AtomicInteger arrowSecondsAlive = new AtomicInteger();
+
                     Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.getInstance(), (task) -> {
                         ticksPassed.getAndIncrement();
                         if (ticksPassed.get() % 20 == 0) {

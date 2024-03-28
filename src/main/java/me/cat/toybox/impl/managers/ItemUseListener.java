@@ -62,13 +62,13 @@ public class ItemUseListener implements Listener {
 
                                 UUID playerId = player.getUniqueId();
                                 if (cooldownManager.isCooldownOver(playerId, builder.getUseCooldown())) {
-                                    player.sendMessage(Helper.getPlayActivatedMessageComponent(builder.getDisplayName()));
+                                    player.sendMessage(Helper.getActivatedMessageComponent(builder.getDisplayName()));
                                     item.useItemInteraction(event);
 
                                     cooldownManager.removeFromCooldown(playerId);
                                     cooldownManager.addToCooldown(playerId);
                                 } else {
-                                    player.sendMessage(Helper.getPlayCooldownMessageComponent(builder.getDisplayName(), builder.getUseCooldown()));
+                                    player.sendMessage(Helper.getCooldownMessageComponent(builder.getDisplayName(), builder.getUseCooldown()));
                                     event.setCancelled(true);
                                 }
                             }

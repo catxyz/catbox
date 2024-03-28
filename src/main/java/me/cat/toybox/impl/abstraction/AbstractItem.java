@@ -75,7 +75,7 @@ public abstract class AbstractItem {
             return this;
         }
 
-        public <T, Z> AbstractItemBuilder addData(NamespacedKey key, PersistentDataType<T, Z> dataType, Z value) {
+        public <T, V> AbstractItemBuilder addData(NamespacedKey key, PersistentDataType<T, V> dataType, V value) {
             this.persistentDataContainer.set(key, dataType, value);
             return this;
         }
@@ -204,7 +204,14 @@ public abstract class AbstractItem {
         }
     }
 
+    public void initAdditionalItemData() {
+    }
+
     public abstract void useItemInteraction(PlayerInteractEvent event);
+
+    public ItemStack getSelfItemStack() {
+        return getBuilder().toItemStack();
+    }
 
     public AbstractItemBuilder getBuilder() {
         return builder;

@@ -39,8 +39,7 @@ public class PassengerEnderPearlItem extends AbstractItem implements Listener {
     ));
     private static final long DESPAWN_SECONDS = 30L;
     private static final int OFFHAND_SLOT_NUMBER = 40;
-    private Player thrower;
-    private final List<EnderPearl> activeEnderPearls;
+    private static final List<EnderPearl> ACTIVE_ENDER_PEARLS = Lists.newArrayList();
 
     public PassengerEnderPearlItem() {
         super(
@@ -58,14 +57,15 @@ public class PassengerEnderPearlItem extends AbstractItem implements Listener {
                                 Component.text("???", NamedTextColor.GRAY)
                         ))
         );
+    }
 
-        this.activeEnderPearls = Lists.newArrayList();
-        checkForBadEnderPearls();
+    @Override
+    public void initAdditionalItemData() {
+        runFallbackOffHandEnderPearlChecker();
     }
 
     @Override
     public void useItemInteraction(PlayerInteractEvent event) {
-        this.thrower = event.getPlayer();
     }
 
     @EventHandler
@@ -74,17 +74,17 @@ public class PassengerEnderPearlItem extends AbstractItem implements Listener {
         ItemStack enderPearl = event.getItemStack();
 
         if (enderPearl.getItemMeta().getPersistentDataContainer().has(PASSENGER_ENDER_PEARL_TAG)) {
-            Bukkit.getServer().getScheduler().runTask(ToyboxPlugin.getInstance(),
-                    () -> player.getInventory().setItemInMainHand(getBuilder().toItemStack()));
+            event.setShouldConsume(false);
 
             EnderPearl enderPearlEntity = (EnderPearl) event.getProjectile();
             enderPearlEntity.getPersistentDataContainer()
                     .set(PASSENGER_ENDER_PEARL_TAG, PersistentDataType.BOOLEAN, true);
             enderPearlEntity.addPassenger(player);
-            activeEnderPearls.add(enderPearlEntity);
+            ACTIVE_ENDER_PEARLS.add(enderPearlEntity);
 
             AtomicInteger ticksPassed = new AtomicInteger();
             AtomicInteger enderPearlSecondsAlive = new AtomicInteger();
+
             Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.getInstance(), (task) -> {
                 ticksPassed.getAndIncrement();
                 if (ticksPassed.get() % 20 == 0) {
@@ -100,11 +100,11 @@ public class PassengerEnderPearlItem extends AbstractItem implements Listener {
                     task.cancel();
                 }
 
-                activeEnderPearls.stream()
+                ACTIVE_ENDER_PEARLS.stream()
                         .filter(activeEnderPearlEntity -> activeEnderPearlEntity.getPassengers().isEmpty())
                         .forEach(EnderPearl::remove);
 
-                if (activeEnderPearls.isEmpty()) {
+                if (ACTIVE_ENDER_PEARLS.isEmpty()) {
                     task.cancel();
                 }
             }, 0L, 1L);
@@ -122,8 +122,11 @@ public class PassengerEnderPearlItem extends AbstractItem implements Listener {
 
     @EventHandler
     public void onOffhandSwitch(PlayerSwapHandItemsEvent event) {
-        if (event.getOffHandItem().getItemMeta().getPersistentDataContainer().has(PASSENGER_ENDER_PEARL_TAG)) {
-            event.getPlayer().sendMessage(Component.text("Can't swap this item!", NamedTextColor.RED));
+        Player player = event.getPlayer();
+        ItemStack offHandItem = event.getOffHandItem();
+
+        if (offHandItem.getItemMeta().getPersistentDataContainer().has(PASSENGER_ENDER_PEARL_TAG)) {
+            player.sendMessage(Component.text("Can't swap this item!", NamedTextColor.RED));
             event.setCancelled(true);
         }
     }
@@ -145,14 +148,14 @@ public class PassengerEnderPearlItem extends AbstractItem implements Listener {
                         event.setCancelled(true);
 
                         player.getOpenInventory().setCursor(null);
-                        player.getInventory().addItem(getBuilder().toItemStack());
+                        player.getInventory().addItem(getSelfItemStack());
                     }
                 }
             }
         }
     }
 
-    private void checkForBadEnderPearls() {
+    private void runFallbackOffHandEnderPearlChecker() {
         Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.getInstance(), (task) -> {
             for (Player player : Bukkit.getServer().getOnlinePlayers()) {
                 PlayerInventory playerInventory = player.getInventory();
@@ -161,14 +164,10 @@ public class PassengerEnderPearlItem extends AbstractItem implements Listener {
                 if (offHandItem.getType() != Material.AIR) {
                     if (offHandItem.getItemMeta().getPersistentDataContainer().has(PASSENGER_ENDER_PEARL_TAG)) {
                         playerInventory.setItemInOffHand(null);
-                        playerInventory.addItem(getBuilder().toItemStack());
+                        playerInventory.addItem(getSelfItemStack());
                     }
                 }
             }
         }, 0L, 5L);
-    }
-
-    public Player getThrower() {
-        return thrower;
     }
 }

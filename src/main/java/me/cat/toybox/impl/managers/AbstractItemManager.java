@@ -66,7 +66,7 @@ public class AbstractItemManager {
 
     public void giveAllItems(Player player) {
         mappedItemIdAndStack.forEach((itemId, itemStack) -> {
-            player.sendMessage(Helper.getPlayGiveItemMessageComponent(itemId, player.getName()));
+            player.sendMessage(Helper.getGiveItemMessageComponent(itemId, player.getName()));
             player.getInventory().addItem(itemStack);
         });
     }
@@ -74,6 +74,8 @@ public class AbstractItemManager {
     public void addAbstractItem(AbstractItem abstractItem) {
         if (!isItemRegistered(abstractItem)) {
             registeredItems.add(abstractItem);
+            abstractItem.initAdditionalItemData();
+
             if (abstractItem instanceof Listener itemSelfListener) {
                 plugin.registerEvents(itemSelfListener);
             }

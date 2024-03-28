@@ -123,7 +123,7 @@ public class ToyboxPlugin extends JavaPlugin implements Listener {
                     player.sendMessage(Component.text("Invalid item id!", NamedTextColor.RED));
                     return false;
                 } else {
-                    player.sendMessage(Helper.getPlayGiveItemMessageComponent(itemId, player.getName()));
+                    player.sendMessage(Helper.getGiveItemMessageComponent(itemId, player.getName()));
                     player.getInventory().addItem(itemToGive);
                 }
 

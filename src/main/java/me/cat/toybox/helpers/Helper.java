@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 
 public class Helper {
 
-    public static Component getPlayGiveItemMessageComponent(String itemId, String playerName) {
+    public static Component getGiveItemMessageComponent(String itemId, String playerName) {
         return Component.text("Gave ", NamedTextColor.GREEN)
                 .append(Component.text(itemId.toUpperCase(Locale.ROOT), NamedTextColor.YELLOW))
                 .append(Component.text(" to ", NamedTextColor.GREEN))
@@ -29,19 +29,26 @@ public class Helper {
                 .append(Component.text('!', NamedTextColor.GREEN));
     }
 
-    public static Component getPlayActivatedMessageComponent(Component content) {
+    public static Component getActivatedMessageComponent(Component content) {
         return Component.text("Active -> ", NamedTextColor.GREEN)
                 .append(content)
                 .append(Component.text('!', NamedTextColor.GREEN));
     }
 
-    public static Component getPlayCooldownMessageComponent(Component displayName, Duration useCooldown) {
+    public static Component getCooldownMessageComponent(Component displayName, Duration useCooldown) {
         return Component.text("Cooldown -> ", NamedTextColor.RED)
                 .append(Component.text("use ", NamedTextColor.RED))
                 .append(displayName)
                 .append(Component.text(" again in ", NamedTextColor.RED))
                 .append(Component.text(Helper.formatDuration(useCooldown), NamedTextColor.YELLOW))
                 .append(Component.text('!', NamedTextColor.RED));
+    }
+
+    public static Component enabledOrDisabled(boolean expression) {
+        if (expression) {
+            return Component.text("enabled", NamedTextColor.GREEN);
+        }
+        return Component.text("disabled", NamedTextColor.RED);
     }
 
     public static Component makeComponentColorful(TextComponent component) {
@@ -62,6 +69,17 @@ public class Helper {
         return newComponent;
     }
 
+    public static int randNumBetween(int least, int most) {
+        return ThreadLocalRandom.current().nextInt(least, most + 1);
+    }
+
+    public static <T> T randListElem(List<T> list) {
+        if (list.size() == 1) {
+            return list.get(0);
+        }
+        return list.get(ThreadLocalRandom.current().nextInt(list.size()));
+    }
+
     public static String formatNum(Object number) {
         double d = Double.parseDouble(new DecimalFormat("#.#").format(number));
         return NumberFormat.getInstance().format(d);
@@ -73,9 +91,11 @@ public class Helper {
 
     public static void removeEntitiesInStyle(Particle particle, int count, Entity... entities) {
         Arrays.stream(entities)
+                .filter(Entity::isValid)
                 .map(Entity::getLocation)
                 .forEach(location -> location.getWorld().spawnParticle(particle, location, count));
         Arrays.stream(entities)
+                .filter(Entity::isValid)
                 .forEach(Entity::remove);
     }
 
