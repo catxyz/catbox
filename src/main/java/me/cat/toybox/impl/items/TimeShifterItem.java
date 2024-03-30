@@ -4,7 +4,8 @@ import com.destroystokyo.paper.MaterialTags;
 import com.google.common.base.Preconditions;
 import me.cat.toybox.ToyboxPlugin;
 import me.cat.toybox.helpers.LieDetectionHelper;
-import me.cat.toybox.impl.abstraction.AbstractItem;
+import me.cat.toybox.impl.abstraction.item.ToyboxItem;
+import me.cat.toybox.impl.abstraction.item.ToyboxItemBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -29,15 +30,15 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class TimeShifterItem extends AbstractItem implements Listener {
+public class TimeShifterItem extends ToyboxItem implements Listener {
 
     private static final NamespacedKey IS_CUSTOM_SIGN_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
             "is_custom_sign",
-            ToyboxPlugin.getInstance()
+            ToyboxPlugin.get()
     ));
     private static final NamespacedKey CUSTOM_SIGN_OWNER_UUID_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
             "custom_sign_owner_uuid",
-            ToyboxPlugin.getInstance()
+            ToyboxPlugin.get()
     ));
     private final AtomicReference<BukkitTask> timeTask = new AtomicReference<>(null);
     private Location timeInputSignLocation;
@@ -47,16 +48,16 @@ public class TimeShifterItem extends AbstractItem implements Listener {
 
     public TimeShifterItem() {
         super(
-                new AbstractItemBuilder()
-                        .setUseActions(List.of(
+                new ToyboxItemBuilder()
+                        .useActions(List.of(
                                 Action.RIGHT_CLICK_AIR,
                                 Action.RIGHT_CLICK_BLOCK
                         ))
-                        .setItemId("time_shifter")
-                        .setUseCooldown(Duration.ZERO)
-                        .setMaterial(Material.CLOCK)
-                        .setDisplayName(Component.text("Time Shifter", NamedTextColor.DARK_RED))
-                        .setLore(List.of(
+                        .itemId("time_shifter")
+                        .useCooldown(Duration.ZERO)
+                        .material(Material.CLOCK)
+                        .displayName(Component.text("Time Shifter", NamedTextColor.DARK_RED))
+                        .lore(List.of(
                                 Component.empty(),
                                 Component.text("About time!", NamedTextColor.GRAY)
                         ))
@@ -64,7 +65,7 @@ public class TimeShifterItem extends AbstractItem implements Listener {
     }
 
     @Override
-    public void useItemInteraction(PlayerInteractEvent event) {
+    public void onUse(PlayerInteractEvent event) {
         Player player = event.getPlayer();
 
         if (someoneAlreadyUsingItem) {
@@ -83,7 +84,7 @@ public class TimeShifterItem extends AbstractItem implements Listener {
                 player.sendMessage(Component.text("Time is shifting!", NamedTextColor.GREEN));
 
                 AtomicLong time = new AtomicLong(world.getFullTime());
-                Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.getInstance(), (task) -> {
+                Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.get(), (task) -> {
                     timeTask.set(task);
 
                     if (isUpdateIntervalSecondsValueSet()) {
@@ -120,7 +121,7 @@ public class TimeShifterItem extends AbstractItem implements Listener {
 
             Bukkit.getServer()
                     .getScheduler()
-                    .runTaskLater(ToyboxPlugin.getInstance(),
+                    .runTaskLater(ToyboxPlugin.get(),
                             () -> player.openSign(sign, Side.FRONT), ((6500L * 20L) / 1000L) / 20L);
             someoneAlreadyUsingItem = true;
 
@@ -150,7 +151,7 @@ public class TimeShifterItem extends AbstractItem implements Listener {
             String storedSignOwnerUuid = signPdc.get(CUSTOM_SIGN_OWNER_UUID_TAG, PersistentDataType.STRING);
 
             if (Objects.equals(storedSignOwnerUuid, player.getUniqueId().toString())) {
-                Bukkit.getServer().getScheduler().runTaskLater(ToyboxPlugin.getInstance(), () -> {
+                Bukkit.getServer().getScheduler().runTaskLater(ToyboxPlugin.get(), () -> {
                     Sign updatedSign = (Sign) event.getBlock().getState(false);
                     updatedSign.update();
                     String firstSignLine = ((TextComponent) updatedSign.getSide(Side.FRONT).line(0)).content();
@@ -216,7 +217,7 @@ public class TimeShifterItem extends AbstractItem implements Listener {
     private void makeSignMagicallyDisappear() {
         Bukkit.getServer()
                 .getScheduler()
-                .runTaskLater(ToyboxPlugin.getInstance(),
+                .runTaskLater(ToyboxPlugin.get(),
                         () -> timeInputSignLocation.getBlock().setType(Material.AIR), 10L);
     }
 

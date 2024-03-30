@@ -1,20 +1,15 @@
 package me.cat.toybox;
 
 import me.cat.toybox.helpers.Helper;
-import me.cat.toybox.impl.managers.AbstractItemManager;
 import me.cat.toybox.impl.managers.CooldownManager;
+import me.cat.toybox.impl.managers.ToyboxItemManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -25,8 +20,8 @@ public class ToyboxPlugin extends JavaPlugin implements Listener {
 
     private static ToyboxPlugin INSTANCE;
     private static final String COMMAND_FALLBACK_PREFIX = "toybox";
-    private static final Component COMMAND_MISSING_PERMISSION_COMPONENT = Component.text("Missing permission!", NamedTextColor.RED);
-    private AbstractItemManager abstractItemManager;
+    private static final Component UNABLE_USE_COMMAND_COMPONENT = Component.text("You can't use this!", NamedTextColor.RED);
+    private ToyboxItemManager toyboxItemManager;
     private CooldownManager cooldownManager;
     private boolean abilitiesDisabled = false;
 
@@ -35,11 +30,10 @@ public class ToyboxPlugin extends JavaPlugin implements Listener {
         INSTANCE = this;
 
         this.cooldownManager = new CooldownManager();
-        this.abstractItemManager = new AbstractItemManager(this);
+        this.toyboxItemManager = new ToyboxItemManager(this, cooldownManager);
 
         registerCommands();
         registerEvents(
-                this,
                 cooldownManager
         );
     }
@@ -50,7 +44,7 @@ public class ToyboxPlugin extends JavaPlugin implements Listener {
             public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
                 if (!(sender instanceof Player player)) return false;
                 if (!sender.isOp()) {
-                    player.sendMessage(COMMAND_MISSING_PERMISSION_COMPONENT);
+                    player.sendMessage(UNABLE_USE_COMMAND_COMPONENT);
                     return false;
                 }
 
@@ -71,7 +65,7 @@ public class ToyboxPlugin extends JavaPlugin implements Listener {
             public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
                 if (!(sender instanceof Player player)) return false;
                 if (!sender.isOp()) {
-                    player.sendMessage(COMMAND_MISSING_PERMISSION_COMPONENT);
+                    player.sendMessage(UNABLE_USE_COMMAND_COMPONENT);
                     return false;
                 }
 
@@ -85,11 +79,11 @@ public class ToyboxPlugin extends JavaPlugin implements Listener {
                                 .append(Component.text('!', NamedTextColor.GREEN)));
 
                         targetPlayer.getInventory().clear();
-                        abstractItemManager.giveAllItems(targetPlayer);
+                        toyboxItemManager.giveAllItems(targetPlayer);
                     }
                 } else {
                     player.getInventory().clear();
-                    abstractItemManager.giveAllItems(player);
+                    toyboxItemManager.giveAllItems(player);
                 }
                 return true;
             }
@@ -108,7 +102,7 @@ public class ToyboxPlugin extends JavaPlugin implements Listener {
             public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
                 if (!(sender instanceof Player player)) return false;
                 if (!sender.isOp()) {
-                    player.sendMessage(COMMAND_MISSING_PERMISSION_COMPONENT);
+                    player.sendMessage(UNABLE_USE_COMMAND_COMPONENT);
                     return false;
                 }
 
@@ -118,7 +112,7 @@ public class ToyboxPlugin extends JavaPlugin implements Listener {
                 }
 
                 String itemId = args[0];
-                ItemStack itemToGive = abstractItemManager.getMappedItemIdAndStack().get(itemId);
+                ItemStack itemToGive = toyboxItemManager.getItemStackById(itemId);
                 if (itemToGive == null) {
                     player.sendMessage(Component.text("Invalid item id!", NamedTextColor.RED));
                     return false;
@@ -133,9 +127,9 @@ public class ToyboxPlugin extends JavaPlugin implements Listener {
             @Override
             public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
                 if (sender.isOp()) {
-                    return abstractItemManager.getRegisteredItems()
+                    return toyboxItemManager.getRegisteredItems()
                             .stream()
-                            .map(item -> item.getBuilder().getItemId())
+                            .map(item -> item.builder().itemId())
                             .toList();
                 }
                 return List.of();
@@ -153,30 +147,12 @@ public class ToyboxPlugin extends JavaPlugin implements Listener {
         this.abilitiesDisabled = abilitiesDisabled;
     }
 
-    // todo -> move these to their respective classes
-    @EventHandler
-    public void onArmorStandManipulate(PlayerArmorStandManipulateEvent event) {
-        event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onEntityDeath(EntityDeathEvent event) {
-        event.getDrops().clear();
-    }
-
-    @EventHandler
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (event.getDamager() instanceof Firework) {
-            event.setCancelled(true);
-        }
-    }
-
-    public static ToyboxPlugin getInstance() {
+    public static ToyboxPlugin get() {
         return INSTANCE;
     }
 
-    public AbstractItemManager getAbstractItemManager() {
-        return abstractItemManager;
+    public ToyboxItemManager getToyboxItemManager() {
+        return toyboxItemManager;
     }
 
     public CooldownManager getCooldownManager() {

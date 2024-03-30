@@ -6,13 +6,15 @@ import com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent;
 import com.google.common.base.Preconditions;
 import me.cat.toybox.ToyboxPlugin;
 import me.cat.toybox.helpers.Helper;
-import me.cat.toybox.impl.abstraction.AbstractItem;
+import me.cat.toybox.impl.abstraction.item.ToyboxItem;
+import me.cat.toybox.impl.abstraction.item.ToyboxItemBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.EvokerFangs;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Trident;
 import org.bukkit.event.EventHandler;
@@ -32,15 +34,15 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
-public class CorrupterItem extends AbstractItem implements Listener {
+public class CorrupterItem extends ToyboxItem implements Listener {
 
     private static final List<Material> CORRUPTED_MATERIALS;
     private static final NamespacedKey CORRUPTER_TRIDENT_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
             "corrupter_trident",
-            ToyboxPlugin.getInstance()
+            ToyboxPlugin.get()
     ));
-    private static final long DESPAWN_SECONDS = 3L;
-    private static final long DELAY_BETWEEN_EFFECT_SECONDS = 6L;
+    private static final int DESPAWN_SECONDS = 6;
+    private static final long DELAY_BETWEEN_EFFECT_SECONDS = 6L; // todo -> unused??
     private static final int MIN_RADIUS = 1;
     private static final int MAX_RADIUS = 6;
 
@@ -57,26 +59,26 @@ public class CorrupterItem extends AbstractItem implements Listener {
 
     public CorrupterItem() {
         super(
-                new AbstractItemBuilder()
-                        .setUseActions(List.of(
+                new ToyboxItemBuilder()
+                        .useActions(List.of(
                                 Action.RIGHT_CLICK_AIR,
                                 Action.RIGHT_CLICK_BLOCK,
                                 Action.LEFT_CLICK_AIR,
                                 Action.LEFT_CLICK_BLOCK
                         ))
-                        .setItemId("corrupter")
-                        .setUseCooldown(Duration.ZERO)
-                        .setMaterial(Material.TRIDENT)
-                        .setEnchants(Map.of(
+                        .itemId("corrupter")
+                        .useCooldown(Duration.ZERO)
+                        .material(Material.TRIDENT)
+                        .enchants(Map.of(
                                 Enchantment.LOYALTY, 5
                         ))
-                        .addData(CORRUPTER_TRIDENT_TAG, PersistentDataType.BOOLEAN, true)
-                        .setItemFlags(List.of(
+                        .insertData(CORRUPTER_TRIDENT_TAG, PersistentDataType.BOOLEAN, true)
+                        .itemFlags(List.of(
                                 ItemFlag.HIDE_ENCHANTS,
                                 ItemFlag.HIDE_ATTRIBUTES
                         ))
-                        .setDisplayName(Component.text("Corrupter", NamedTextColor.DARK_PURPLE))
-                        .setLore(generateDynamicItemLore(
+                        .displayName(Component.text("Corrupter", NamedTextColor.DARK_PURPLE))
+                        .lore(generateDynamicItemLore(
                                 currentCorruptionRadius,
                                 trailingEffectToggled
                         ))
@@ -84,7 +86,7 @@ public class CorrupterItem extends AbstractItem implements Listener {
     }
 
     @Override
-    public void useItemInteraction(PlayerInteractEvent event) {
+    public void onUse(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Action action = event.getAction();
 
@@ -111,8 +113,8 @@ public class CorrupterItem extends AbstractItem implements Listener {
                 player.sendMessage(getRadiusUpdateComponent(currentCorruptionRadius));
             }
 
-            ItemStack updatedItem = getBuilder()
-                    .setLore(generateDynamicItemLore(
+            ItemStack updatedItem = builder()
+                    .lore(generateDynamicItemLore(
                             currentCorruptionRadius,
                             trailingEffectToggled
                     ))
@@ -131,18 +133,19 @@ public class CorrupterItem extends AbstractItem implements Listener {
 
             Bukkit.getServer()
                     .getScheduler()
-                    .runTaskTimer(ToyboxPlugin.getInstance(),
+                    .runTaskTimer(ToyboxPlugin.get(),
                             (muteLightningTask) -> {
                                 if (!tridentEntity.isValid()) {
                                     muteLightningTask.cancel();
                                 }
-                                player.stopSound(SoundCategory.WEATHER);
+                                player.stopSound(Sound.ENTITY_LIGHTNING_BOLT_IMPACT);
+                                player.stopSound(Sound.ENTITY_LIGHTNING_BOLT_THUNDER);
                             }, 0L, 1L);
 
             AtomicInteger ticksPassed = new AtomicInteger();
             AtomicInteger tridentSecondsAlive = new AtomicInteger();
 
-            Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.getInstance(), (task) -> {
+            Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.get(), (task) -> {
                 ticksPassed.getAndIncrement();
                 if (ticksPassed.get() % 20 == 0) {
                     tridentSecondsAlive.getAndIncrement();
@@ -165,12 +168,12 @@ public class CorrupterItem extends AbstractItem implements Listener {
                     task.cancel();
                 }
 
-                playCorruptionEffect(tridentEntity, task);
+                playCorruptionEffect(player, tridentEntity, task);
             }, 0L, 1L);
         }
     }
 
-    private void playCorruptionEffect(Trident tridentEntity, BukkitTask hookedTask) {
+    private void playCorruptionEffect(Player player, Trident tridentEntity, BukkitTask hookedTask) {
         // saved in a variable so it doesn't recalculate
         boolean shouldPlayEffect = tridentEntity.isOnGround();
 
@@ -191,15 +194,17 @@ public class CorrupterItem extends AbstractItem implements Listener {
                     CORRUPTED_MATERIALS,
                     true,
                     affectedBlocks -> affectedBlocks.forEach(block -> {
-                        tridentWorld.strikeLightningEffect(block.getLocation());
-
                         int rand = Helper.randNumBetween(0, 1);
                         if (rand == 1) {
                             Material pickedFlower = Helper.randListElem(flowers);
 
                             Location locAboveAffectedBlock = block.getLocation()
-                                    .clone()
-                                    .add(0, 1, 0);
+                                    .add(0.5d, 1.0d, 0.5d);
+                            tridentWorld.spawn(locAboveAffectedBlock, EvokerFangs.class, evokerFangs -> {
+                                evokerFangs.setOwner(player);
+                                tridentWorld.spawnParticle(Particle.SONIC_BOOM, evokerFangs.getLocation(), 1);
+                            });
+
                             Block blockAbove = locAboveAffectedBlock.getBlock();
 
                             if (blockAbove.getType() == Material.AIR && !blockAbove.isLiquid()) {

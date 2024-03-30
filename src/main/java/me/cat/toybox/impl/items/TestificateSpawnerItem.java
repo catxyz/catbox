@@ -1,6 +1,7 @@
 package me.cat.toybox.impl.items;
 
-import me.cat.toybox.impl.abstraction.AbstractItem;
+import me.cat.toybox.impl.abstraction.item.ToyboxItem;
+import me.cat.toybox.impl.abstraction.item.ToyboxItemBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -15,7 +16,7 @@ import org.bukkit.inventory.ItemFlag;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class TestificateSpawnerItem extends AbstractItem {
+public class TestificateSpawnerItem extends ToyboxItem {
 
     public static final String[] TESTIFICATE_NAMES = new String[]{
             "jerry",
@@ -30,30 +31,29 @@ public class TestificateSpawnerItem extends AbstractItem {
 
     public TestificateSpawnerItem() {
         super(
-                new AbstractItemBuilder()
-                        .setUseActions(List.of(
+                new ToyboxItemBuilder()
+                        .useActions(List.of(
                                 Action.RIGHT_CLICK_AIR,
                                 Action.RIGHT_CLICK_BLOCK,
                                 Action.LEFT_CLICK_AIR,
                                 Action.LEFT_CLICK_BLOCK
                         ))
-                        .setItemId("testificate_spawner")
-                        .setMaterial(Material.SPAWNER)
-                        .setItemFlags(List.of(
+                        .itemId("testificate_spawner")
+                        .material(Material.SPAWNER)
+                        .itemFlags(List.of(
                                 ItemFlag.HIDE_ITEM_SPECIFICS
                         ))
-                        .setDisplayName(Component.text("Testificate Spawner", NamedTextColor.RED))
-                        .setLore(List.of(
+                        .displayName(Component.text("Testificate Spawner", NamedTextColor.RED))
+                        .lore(List.of(
                                 Component.empty(),
                                 Component.text("They usually live a very short life.", NamedTextColor.GRAY)
                         ))
+                        .cancelUseInteraction(true)
         );
     }
 
     @Override
-    public void useItemInteraction(PlayerInteractEvent event) {
-        event.setCancelled(true);
-
+    public void onUse(PlayerInteractEvent event) {
         Player player = event.getPlayer();
 
         int rgbLimit = 255;

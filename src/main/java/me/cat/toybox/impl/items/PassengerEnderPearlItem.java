@@ -5,7 +5,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import me.cat.toybox.ToyboxPlugin;
 import me.cat.toybox.helpers.Helper;
-import me.cat.toybox.impl.abstraction.AbstractItem;
+import me.cat.toybox.impl.abstraction.item.ToyboxItem;
+import me.cat.toybox.impl.abstraction.item.ToyboxItemBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -30,29 +31,29 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class PassengerEnderPearlItem extends AbstractItem implements Listener {
+public class PassengerEnderPearlItem extends ToyboxItem implements Listener {
 
     private static final String PASSENGER_ENDER_PEARL_ITEM_ID = "passenger_ender_pearl";
     private static final NamespacedKey PASSENGER_ENDER_PEARL_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
             "passenger_ender_pearl",
-            ToyboxPlugin.getInstance()
+            ToyboxPlugin.get()
     ));
-    private static final long DESPAWN_SECONDS = 30L;
+    private static final int DESPAWN_SECONDS = 30;
     private static final int OFFHAND_SLOT_NUMBER = 40;
     private static final List<EnderPearl> ACTIVE_ENDER_PEARLS = Lists.newArrayList();
 
     public PassengerEnderPearlItem() {
         super(
-                new AbstractItemBuilder()
-                        .setUseActions(List.of(
+                new ToyboxItemBuilder()
+                        .useActions(List.of(
                                 Action.RIGHT_CLICK_AIR,
                                 Action.RIGHT_CLICK_BLOCK
                         ))
-                        .setItemId(PASSENGER_ENDER_PEARL_ITEM_ID)
-                        .setMaterial(Material.ENDER_PEARL)
-                        .addData(PASSENGER_ENDER_PEARL_TAG, PersistentDataType.BOOLEAN, true)
-                        .setDisplayName(Component.text("Passenger Ender Pearl", NamedTextColor.YELLOW))
-                        .setLore(List.of(
+                        .itemId(PASSENGER_ENDER_PEARL_ITEM_ID)
+                        .material(Material.ENDER_PEARL)
+                        .insertData(PASSENGER_ENDER_PEARL_TAG, PersistentDataType.BOOLEAN, true)
+                        .displayName(Component.text("Passenger Ender Pearl", NamedTextColor.YELLOW))
+                        .lore(List.of(
                                 Component.empty(),
                                 Component.text("???", NamedTextColor.GRAY)
                         ))
@@ -60,12 +61,12 @@ public class PassengerEnderPearlItem extends AbstractItem implements Listener {
     }
 
     @Override
-    public void initAdditionalItemData() {
+    public void loadAdditionalItemData() {
         runFallbackOffHandEnderPearlChecker();
     }
 
     @Override
-    public void useItemInteraction(PlayerInteractEvent event) {
+    public void onUse(PlayerInteractEvent event) {
     }
 
     @EventHandler
@@ -85,7 +86,7 @@ public class PassengerEnderPearlItem extends AbstractItem implements Listener {
             AtomicInteger ticksPassed = new AtomicInteger();
             AtomicInteger enderPearlSecondsAlive = new AtomicInteger();
 
-            Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.getInstance(), (task) -> {
+            Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.get(), (task) -> {
                 ticksPassed.getAndIncrement();
                 if (ticksPassed.get() % 20 == 0) {
                     enderPearlSecondsAlive.getAndIncrement();
@@ -156,7 +157,7 @@ public class PassengerEnderPearlItem extends AbstractItem implements Listener {
     }
 
     private void runFallbackOffHandEnderPearlChecker() {
-        Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.getInstance(), (task) -> {
+        Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.get(), (task) -> {
             for (Player player : Bukkit.getServer().getOnlinePlayers()) {
                 PlayerInventory playerInventory = player.getInventory();
                 ItemStack offHandItem = playerInventory.getItemInOffHand();

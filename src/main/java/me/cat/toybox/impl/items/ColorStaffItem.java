@@ -3,7 +3,9 @@ package me.cat.toybox.impl.items;
 import com.destroystokyo.paper.MaterialTags;
 import me.cat.toybox.ToyboxPlugin;
 import me.cat.toybox.helpers.Helper;
-import me.cat.toybox.impl.abstraction.AbstractItem;
+import me.cat.toybox.impl.abstraction.item.SharedItemTags;
+import me.cat.toybox.impl.abstraction.item.ToyboxItem;
+import me.cat.toybox.impl.abstraction.item.ToyboxItemBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
@@ -12,6 +14,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -22,10 +25,10 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ColorStaffItem extends AbstractItem {
+public class ColorStaffItem extends ToyboxItem {
 
     private static final List<Material> HEAD_COLORS;
-    private static final long DESPAWN_SECONDS = 3L;
+    private static final int DESPAWN_SECONDS = 3;
     private Player shooter;
 
     static {
@@ -36,18 +39,18 @@ public class ColorStaffItem extends AbstractItem {
 
     public ColorStaffItem() {
         super(
-                new AbstractItemBuilder()
-                        .setUseActions(List.of(
+                new ToyboxItemBuilder()
+                        .useActions(List.of(
                                 Action.RIGHT_CLICK_AIR,
                                 Action.RIGHT_CLICK_BLOCK,
                                 Action.LEFT_CLICK_AIR,
                                 Action.LEFT_CLICK_BLOCK
                         ))
-                        .setItemId("color_staff")
-                        .setUseCooldown(Duration.ofMillis(500L))
-                        .setMaterial(Material.BLAZE_ROD)
-                        .setDisplayName(Helper.makeComponentColorful(Component.text("Color Staff")))
-                        .setLore(List.of(
+                        .itemId("color_staff")
+                        .useCooldown(Duration.ofMillis(500L))
+                        .material(Material.BLAZE_ROD)
+                        .displayName(Helper.makeComponentColorful(Component.text("Color Staff")))
+                        .lore(List.of(
                                 Component.empty(),
                                 Helper.makeComponentColorful(Component.text("All the colors of light!"))
                         ))
@@ -55,22 +58,24 @@ public class ColorStaffItem extends AbstractItem {
     }
 
     @Override
-    public void useItemInteraction(PlayerInteractEvent event) {
+    public void onUse(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-
-        this.shooter = player;
+        shooter = player;
 
         player.sendMessage(Component.text("Pew!", NamedTextColor.GRAY));
         player.playSound(player.getLocation(), Sound.ENTITY_CAT_AMBIENT, 10f, 1f);
 
         player.getWorld().spawn(player.getEyeLocation().clone().subtract(0.0d, 0.2d, 0.0d), ArmorStand.class, armorStand -> {
+            armorStand.getPersistentDataContainer()
+                    .set(SharedItemTags.CUSTOM_ARMOR_STAND_TAG, PersistentDataType.BOOLEAN, true);
+
             armorStand.setSmall(true);
             armorStand.setGravity(false);
             armorStand.setVisible(false);
             armorStand.getEquipment()
                     .setHelmet(new ItemStack(HEAD_COLORS.get(ThreadLocalRandom.current().nextInt(HEAD_COLORS.size()))));
 
-            Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.getInstance(), (task) -> {
+            Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.get(), (task) -> {
                 if (!armorStand.isValid()) {
                     task.cancel();
                 }
@@ -85,7 +90,7 @@ public class ColorStaffItem extends AbstractItem {
             runKillEntitiesAroundArmorStandTask(armorStand);
 
             AtomicInteger armorStandSecondsAlive = new AtomicInteger();
-            Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.getInstance(), (task) -> {
+            Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.get(), (task) -> {
                 if (!armorStand.isValid()) {
                     task.cancel();
                 }
@@ -101,7 +106,7 @@ public class ColorStaffItem extends AbstractItem {
     }
 
     private void spawnFireworkOnGroundHit(ArmorStand armorStand) {
-        Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.getInstance(), (task) -> {
+        Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.get(), (task) -> {
             Location armorStandLocation = armorStand.getLocation();
 
             if (Helper.isOnGround(armorStandLocation)) {
@@ -114,7 +119,7 @@ public class ColorStaffItem extends AbstractItem {
     }
 
     private void runKillEntitiesAroundArmorStandTask(ArmorStand armorStand) {
-        Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.getInstance(), (task) -> {
+        Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.get(), (task) -> {
             if (!armorStand.isValid()) {
                 task.cancel();
             }
@@ -171,6 +176,8 @@ public class ColorStaffItem extends AbstractItem {
         fireworkMeta.setPower(0);
         firework.setFireworkMeta(fireworkMeta);
         firework.setTicksToDetonate(0);
+        firework.getPersistentDataContainer()
+                .set(SharedItemTags.USES_FIREWORKS_TAG, PersistentDataType.BOOLEAN, true);
 
         firework.getNearbyEntities(2.5d, 2.5d, 2.5d).stream()
                 .filter(entity -> entity instanceof Player && entity.getUniqueId() != shooter.getUniqueId())

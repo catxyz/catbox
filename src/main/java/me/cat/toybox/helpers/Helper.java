@@ -69,6 +69,10 @@ public class Helper {
         return newComponent;
     }
 
+    public static boolean chanceOfHappening(int chance) {
+        return ThreadLocalRandom.current().nextInt(100) < chance;
+    }
+
     public static int randNumBetween(int least, int most) {
         return ThreadLocalRandom.current().nextInt(least, most + 1);
     }

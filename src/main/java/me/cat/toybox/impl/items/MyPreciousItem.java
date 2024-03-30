@@ -1,7 +1,8 @@
 package me.cat.toybox.impl.items;
 
 import me.cat.toybox.ToyboxPlugin;
-import me.cat.toybox.impl.abstraction.AbstractItem;
+import me.cat.toybox.impl.abstraction.item.ToyboxItem;
+import me.cat.toybox.impl.abstraction.item.ToyboxItemBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -20,23 +21,24 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class MyPreciousItem extends AbstractItem {
+public class MyPreciousItem extends ToyboxItem {
 
     private boolean isSoundEffectPlaying = false;
+    private final int delayFactor = 5;
 
     public MyPreciousItem() {
         super(
-                new AbstractItemBuilder()
-                        .setUseActions(List.of(
+                new ToyboxItemBuilder()
+                        .useActions(List.of(
                                 Action.RIGHT_CLICK_AIR,
                                 Action.RIGHT_CLICK_BLOCK
                         ))
-                        .setItemId("my_precious")
-                        .setMaterial(Material.EMERALD)
-                        .setDisplayName(Component.text("My Precious", NamedTextColor.LIGHT_PURPLE))
-                        .setLore(List.of(
+                        .itemId("my_precious")
+                        .material(Material.EMERALD)
+                        .displayName(Component.text("My Precious", NamedTextColor.LIGHT_PURPLE))
+                        .lore(List.of(
                                 Component.empty(),
                                 Component.text("They stole it from us.", NamedTextColor.GRAY, TextDecoration.ITALIC),
                                 Component.text("Master betrayed us.", NamedTextColor.GRAY, TextDecoration.ITALIC)
@@ -45,7 +47,7 @@ public class MyPreciousItem extends AbstractItem {
     }
 
     @Override
-    public void useItemInteraction(PlayerInteractEvent event) {
+    public void onUse(PlayerInteractEvent event) {
         Player player = event.getPlayer();
 
         player.addPotionEffect(new PotionEffect(
@@ -58,7 +60,7 @@ public class MyPreciousItem extends AbstractItem {
         ));
 
         if (!isSoundEffectPlaying) {
-            AtomicLong soundDelay = new AtomicLong(0L);
+            AtomicInteger soundDelay = new AtomicInteger(0);
             new BukkitRunnable() {
                 float pitch = 0f;
                 final TextComponent subtitle = Component.text("doesn't like you!", NamedTextColor.RED);
@@ -79,7 +81,7 @@ public class MyPreciousItem extends AbstractItem {
                                 )
                         ));
 
-                        Bukkit.getServer().getScheduler().runTaskLater(ToyboxPlugin.getInstance(), () ->
+                        Bukkit.getServer().getScheduler().runTaskLater(ToyboxPlugin.get(), () ->
                                 player.showTitle(Title.title(
                                         Component.empty(),
                                         Component.text("goodbye", NamedTextColor.GREEN),
@@ -100,14 +102,14 @@ public class MyPreciousItem extends AbstractItem {
                         ));
                         player.playSound(player.getLocation(), Sound.ENTITY_ILLUSIONER_CAST_SPELL, 10f, 0f);
 
-                        Bukkit.getServer().getScheduler().runTaskLater(ToyboxPlugin.getInstance(),
+                        Bukkit.getServer().getScheduler().runTaskLater(ToyboxPlugin.get(),
                                 () -> player.setHealth(0.0d),
                                 (3_000L * 20L) / 1_000L);
 
                         isSoundEffectPlaying = false;
                         this.cancel();
                     }
-                    if (soundDelay.get() % 20L == 0L) {
+                    if (soundDelay.get() % 20 == 0) {
                         player.showTitle(Title.title(
                                 Component.text("villager ")
                                         .append(Component.text(chosenVillager, NamedTextColor.YELLOW)),
@@ -122,9 +124,9 @@ public class MyPreciousItem extends AbstractItem {
                         player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_TRADE, 10f, pitch);
                         pitch += 0.1f;
                     }
-                    soundDelay.getAndAdd(5L);
+                    soundDelay.getAndAdd(delayFactor);
                 }
-            }.runTaskTimer(ToyboxPlugin.getInstance(), 0L, 1L);
+            }.runTaskTimer(ToyboxPlugin.get(), 0L, 1L);
 
             isSoundEffectPlaying = true;
         }
