@@ -109,7 +109,7 @@ public class ColorStaffItem extends ToyboxItem {
         Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.get(), (task) -> {
             Location armorStandLocation = armorStand.getLocation();
 
-            if (Helper.isOnGround(armorStandLocation)) {
+            if (Helper.isLooselyOnGround(armorStandLocation)) {
                 Location missLoc = armorStandLocation.clone().add(0.0d, 0.9d, 0.0d);
                 spawnCustomFirework(armorStand.getWorld(), missLoc);
                 armorStand.remove();

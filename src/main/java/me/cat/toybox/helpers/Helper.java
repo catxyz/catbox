@@ -89,8 +89,11 @@ public class Helper {
         return NumberFormat.getInstance().format(d);
     }
 
-    public static boolean isOnGround(Location location) {
-        return location.clone().subtract(0.0d, 0.1d, 0.0d).getBlock().getType() != Material.AIR;
+    public static boolean isLooselyOnGround(Location location) {
+        Block blockBelow = location.clone()
+                .subtract(0, 0.1, 0)
+                .getBlock();
+        return blockBelow.getType() != Material.AIR && blockBelow.isSolid();
     }
 
     public static void removeEntitiesInStyle(Particle particle, int count, Entity... entities) {

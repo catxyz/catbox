@@ -2,7 +2,6 @@ package me.cat.toybox.items.portal;
 
 import me.cat.toybox.helpers.LoopHelper;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -14,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.scheduler.BukkitTask;
 
 public class PortalListener implements Listener {
 
@@ -42,34 +42,20 @@ public class PortalListener implements Listener {
         toggleEntityAttributes(testSubject, true);
 
         LoopHelper.runIndefinitely(0L, 1L, (task) -> {
-            if (!player.isValid() || !testSubject.isValid()) {
-                if (testSubject.isValid()) {
-                    testSubject.remove();
-                }
-                task.cancel();
-            }
+            handleTaskPersistence(player, task);
+
             Location playerLoc = player.getLocation();
             Location modLoc = playerLoc.clone().add(playerLoc.getDirection().multiply(PortalItem.DISTANCE_BETWEEN));
             modLoc.setYaw(playerLoc.getYaw() - 180f);
-//                        modLoc.add(0.0d, 0.5d, 0.0d);
-
-            double sustainedY;
-            Block blockBelowEntity = modLoc.clone()
-                    .subtract(0.0d, 0.5d, 0.0d)
-                    .getBlock();
-            if (blockBelowEntity.getType() != Material.AIR) {
-                sustainedY = playerLoc.y();
-            } else {
-                sustainedY = modLoc.y();
-            }
-            modLoc.setY(sustainedY);
 
             boolean solidity = false;
-            for (double x = -0.5d; x <= 0.5; x += 0.5) {
-                for (double y = 0.0d; y <= 1.0d; y += 0.5d) {
-                    for (double z = -0.5d; z <= 0.5d; z += 0.5d) {
-                        Block blockAround = modLoc.clone().add(x, y, z).getBlock();
-                        if (blockAround.getType().isSolid()) {
+            for (double x = -0.5; x <= 0.5; x += 0.5) {
+                for (double y = 0.0; y <= 2.0; y += 0.5) {
+                    for (double z = -0.5; z <= 0.5; z += 0.5) {
+                        Block blockAround = modLoc.clone()
+                                .add(x, y, z)
+                                .getBlock();
+                        if (blockAround.isSolid()) {
                             solidity = true;
                             break;
                         }
@@ -84,19 +70,29 @@ public class PortalListener implements Listener {
             }
 
             if (solidity) {
-                int highestYAround = testSubject.getWorld().getHighestBlockYAt(modLoc.getBlockX(), modLoc.getBlockZ());
-                modLoc.setY(highestYAround + 1.0d);
+                int highestYAround = testSubject.getWorld()
+                        .getHighestBlockYAt(modLoc.getBlockX(), modLoc.getBlockZ());
+                modLoc.setY(highestYAround + 1.0);
             }
 
-//                entity.teleport(modLoc.clone().add(0.0d, 0.5d, 0.0d));
-            testSubject.teleport(modLoc);
+            testSubject.teleport(modLoc.clone().add(0, 0.5, 0));
         });
     }
 
+    private void handleTaskPersistence(Player player, BukkitTask hookedTask) {
+        if (!player.isValid()) {
+            toggleEntityAttributes(testSubject, false);
+            hookedTask.cancel();
+        }
+        if (!testSubject.isValid()) {
+            hookedTask.cancel();
+        }
+    }
+
     private void toggleEntityAttributes(Entity entity, boolean toggle) {
-        entity.setInvulnerable(toggle);
         entity.setGravity(!toggle);
         entity.setSilent(toggle);
+        entity.setGlowing(toggle);
     }
 
     private ItemStack getHeldItem(Player player, EquipmentSlot hand) {
