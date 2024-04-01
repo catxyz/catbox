@@ -1,4 +1,4 @@
-package me.cat.toybox.impl.items;
+package me.cat.toybox.items;
 
 import com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent;
 import com.google.common.base.Preconditions;
@@ -26,6 +26,7 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
@@ -126,9 +127,14 @@ public class PassengerEnderPearlItem extends ToyboxItem implements Listener {
         Player player = event.getPlayer();
         ItemStack offHandItem = event.getOffHandItem();
 
-        if (offHandItem.getItemMeta().getPersistentDataContainer().has(PASSENGER_ENDER_PEARL_TAG)) {
-            player.sendMessage(Component.text("Can't swap this item!", NamedTextColor.RED));
-            event.setCancelled(true);
+        if (offHandItem != null) {
+            ItemMeta offHandItemMeta = offHandItem.getItemMeta();
+            if (offHandItemMeta != null) {
+                if (offHandItemMeta.getPersistentDataContainer().has(PASSENGER_ENDER_PEARL_TAG)) {
+                    player.sendMessage(Component.text("Can't swap this item!", NamedTextColor.RED));
+                    event.setCancelled(true);
+                }
+            }
         }
     }
 

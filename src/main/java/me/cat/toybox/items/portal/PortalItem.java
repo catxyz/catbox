@@ -1,4 +1,4 @@
-package me.cat.toybox.impl.items.undeadbow;
+package me.cat.toybox.items.portal;
 
 import com.google.common.base.Preconditions;
 import me.cat.toybox.ToyboxPlugin;
@@ -8,45 +8,42 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.time.Duration;
 import java.util.List;
 
-public class UndeadBowItem extends ToyboxItem implements Listener {
+public class PortalItem extends ToyboxItem {
 
-    protected static final NamespacedKey UNDEAD_BOW_ARROW_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
-            "undead_bow_arrow",
+    protected static final NamespacedKey PORTAL_DEVICE_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
+            "portal_device",
             ToyboxPlugin.get()
     ));
-    protected static final long DESPAWN_SECONDS = 4L;
+    protected static final double DISTANCE_BETWEEN = 3.0d;
 
-    public UndeadBowItem() {
+    public PortalItem() {
         super(
                 new ToyboxItemBuilder()
                         .useActions(List.of(
                                 Action.RIGHT_CLICK_AIR,
                                 Action.RIGHT_CLICK_BLOCK
                         ))
-                        .itemId("undead_bow")
-                        .useCooldown(Duration.ZERO)
-                        .material(Material.BOW)
-                        .insertData(UNDEAD_BOW_ARROW_TAG, PersistentDataType.BOOLEAN, true)
-                        .displayName(Component.text("Undead Bow", NamedTextColor.BLUE))
+                        .itemId("aperture_science_handheld_portal_device")
+                        .material(Material.WHITE_CANDLE)
+                        .insertData(PORTAL_DEVICE_TAG, PersistentDataType.BOOLEAN, true)
+                        .displayName(Component.text("Aperture Science Handheld Portal Device", NamedTextColor.WHITE))
                         .lore(List.of(
                                 Component.empty(),
-                                Component.text("Dead inside!", NamedTextColor.GRAY),
-                                Component.text("... or is it?", NamedTextColor.GRAY)
+                                Component.text("\uD83C\uDF82", NamedTextColor.YELLOW)
                         ))
+                        .cancelUseInteraction(true)
         );
     }
 
     @Override
     public void loadAdditionalItemData() {
-        hookSelfListener(new UndeadBowListener());
+        hookSelfListener(new PortalListener());
     }
 
     @Override

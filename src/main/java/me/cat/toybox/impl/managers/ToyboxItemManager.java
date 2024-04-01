@@ -8,9 +8,10 @@ import me.cat.toybox.impl.abstraction.item.ToyboxItem;
 import me.cat.toybox.impl.abstraction.item.ToyboxItemBuilder;
 import me.cat.toybox.impl.abstraction.sharedlisteners.ArmorStandManipulateListener;
 import me.cat.toybox.impl.abstraction.sharedlisteners.FireworkDamageListener;
-import me.cat.toybox.impl.items.*;
-import me.cat.toybox.impl.items.explosivetoybow.ExplosiveToyBowItem;
-import me.cat.toybox.impl.items.undeadbow.UndeadBowItem;
+import me.cat.toybox.items.*;
+import me.cat.toybox.items.explosivetoybow.ExplosiveToyBowItem;
+import me.cat.toybox.items.portal.PortalItem;
+import me.cat.toybox.items.undeadbow.UndeadBowItem;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -40,15 +41,16 @@ public class ToyboxItemManager {
     }
 
     private void registerItems() {
+        addItem(new ExplosiveToyBowItem());
+        addItem(new PortalItem());
+        addItem(new UndeadBowItem());
         addItem(new ColorStaffItem());
         addItem(new CorrupterItem());
-        addItem(new ExplosiveToyBowItem());
         addItem(new MyPreciousItem());
         addItem(new PassengerEnderPearlItem());
         addItem(new TestificateSpawnerItem());
         addItem(new TestItem());
         addItem(new TimeShifterItem());
-        addItem(new UndeadBowItem());
     }
 
     private void mapItemIdAndStack() {

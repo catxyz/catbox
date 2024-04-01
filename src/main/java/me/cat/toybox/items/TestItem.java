@@ -1,4 +1,4 @@
-package me.cat.toybox.impl.items;
+package me.cat.toybox.items;
 
 import me.cat.toybox.impl.abstraction.item.ToyboxItem;
 import me.cat.toybox.impl.abstraction.item.ToyboxItemBuilder;
@@ -27,7 +27,7 @@ public class TestItem extends ToyboxItem {
                         .displayName(Component.text("Test Item", NamedTextColor.RED))
                         .lore(List.of(
                                 Component.empty(),
-                                Component.text("A very secret item!", NamedTextColor.GRAY)
+                                Component.text("A secret item.", NamedTextColor.GRAY)
                         ))
                         .cancelUseInteraction(true)
         );
@@ -38,6 +38,6 @@ public class TestItem extends ToyboxItem {
         Player player = event.getPlayer();
 
         player.sendMessage(Component.text("hungry? fed!", NamedTextColor.YELLOW));
-        player.setFoodLevel(1111);
+        player.setFoodLevel(100);
     }
 }

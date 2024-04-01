@@ -1,4 +1,4 @@
-package me.cat.toybox.impl.items.undeadbow;
+package me.cat.toybox.items.undeadbow;
 
 import me.cat.toybox.helpers.Helper;
 import me.cat.toybox.helpers.LoopHelper;

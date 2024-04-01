@@ -31,6 +31,10 @@ public class CooldownManager implements Listener {
         if (startTime == null) {
             return true;
         }
+        if (providedCooldownDuration.isNegative()
+                || providedCooldownDuration.isZero()) {
+            return true;
+        }
         long futureExpirationMillis = startTime + providedCooldownDuration.toMillis();
 
         return System.currentTimeMillis() >= futureExpirationMillis;

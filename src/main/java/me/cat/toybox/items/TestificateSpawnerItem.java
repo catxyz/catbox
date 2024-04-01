@@ -1,4 +1,4 @@
-package me.cat.toybox.impl.items;
+package me.cat.toybox.items;
 
 import me.cat.toybox.impl.abstraction.item.ToyboxItem;
 import me.cat.toybox.impl.abstraction.item.ToyboxItemBuilder;

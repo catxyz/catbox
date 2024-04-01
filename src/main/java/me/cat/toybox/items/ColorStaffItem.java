@@ -1,4 +1,4 @@
-package me.cat.toybox.impl.items;
+package me.cat.toybox.items;
 
 import com.destroystokyo.paper.MaterialTags;
 import me.cat.toybox.ToyboxPlugin;

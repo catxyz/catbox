@@ -1,4 +1,4 @@
-package me.cat.toybox.impl.items.explosivetoybow;
+package me.cat.toybox.items.explosivetoybow;
 
 import com.google.common.base.Preconditions;
 import me.cat.toybox.ToyboxPlugin;

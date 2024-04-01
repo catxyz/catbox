@@ -1,4 +1,4 @@
-package me.cat.toybox.impl.items;
+package me.cat.toybox.items;
 
 import com.destroystokyo.paper.MaterialSetTag;
 import com.destroystokyo.paper.MaterialTags;
@@ -194,24 +194,25 @@ public class CorrupterItem extends ToyboxItem implements Listener {
                     CORRUPTED_MATERIALS,
                     true,
                     affectedBlocks -> affectedBlocks.forEach(block -> {
-                        int rand = Helper.randNumBetween(0, 1);
-                        if (rand == 1) {
+                        Location locAboveAffectedBlock = block.getLocation()
+                                .add(0.5d, 1.0d, 0.5d);
+                        Block blockAbove = locAboveAffectedBlock.getBlock();
+
+                        if (Helper.chanceOfHappening(50)) {
                             Material pickedFlower = Helper.randListElem(flowers);
-
-                            Location locAboveAffectedBlock = block.getLocation()
-                                    .add(0.5d, 1.0d, 0.5d);
-                            tridentWorld.spawn(locAboveAffectedBlock, EvokerFangs.class, evokerFangs -> {
-                                evokerFangs.setOwner(player);
-                                tridentWorld.spawnParticle(Particle.SONIC_BOOM, evokerFangs.getLocation(), 1);
-                            });
-
-                            Block blockAbove = locAboveAffectedBlock.getBlock();
 
                             if (blockAbove.getType() == Material.AIR && !blockAbove.isLiquid()) {
                                 for (Player observer : Bukkit.getServer().getOnlinePlayers()) {
                                     observer.sendBlockChange(locAboveAffectedBlock, pickedFlower.createBlockData());
                                 }
                             }
+                        }
+
+                        if (Helper.chanceOfHappening(4)) {
+                            tridentWorld.spawn(locAboveAffectedBlock, EvokerFangs.class, evokerFangs -> {
+                                evokerFangs.setOwner(player);
+                                tridentWorld.spawnParticle(Particle.SONIC_BOOM, evokerFangs.getLocation(), 1);
+                            });
                         }
                     })
             );
