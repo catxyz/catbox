@@ -79,7 +79,7 @@ public class ExplosiveToyBowListener implements Listener, EntityLifetimeLooper {
             PersistentDataContainer arrowPdc = arrow.getPersistentDataContainer();
 
             if (arrowPdc.has(ExplosiveToyBowItem.EXPLOSIVE_TOY_BOW_ARROW_TAG)) {
-                arrow.getWorld().createExplosion(arrow.getLocation(), getExplosionPower(), true, true);
+                arrow.getWorld().createExplosion(arrow.getLocation(), getExplosionPower(), false, false);
                 arrow.remove();
             }
         }

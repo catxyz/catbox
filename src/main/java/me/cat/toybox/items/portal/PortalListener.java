@@ -1,6 +1,10 @@
 package me.cat.toybox.items.portal;
 
+import com.google.common.collect.Maps;
 import me.cat.toybox.helpers.LoopHelper;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -8,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -15,16 +20,25 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
+
 public class PortalListener implements Listener {
 
-    // todo -> map for a per-player picked up entity? (k, v) -> (player, picked-up entity)
-    private Entity testSubject; // todo -> remove this in favor of the per-player entity map thing
+    private final Map<UUID, UUID> mappedPlayerAndEntity;
+    private final Map<UUID, BukkitTask> mappedEntityAndTask;
+
+    public PortalListener() {
+        this.mappedPlayerAndEntity = Maps.newHashMap();
+        this.mappedEntityAndTask = Maps.newHashMap();
+    }
 
     @EventHandler
     public void onEntityRightClick(PlayerInteractAtEntityEvent event) {
         EquipmentSlot hand = event.getHand();
         Player player = event.getPlayer();
-        testSubject = event.getRightClicked();
+        Entity entity = event.getRightClicked();
 
         ItemStack playerHandItem = getHeldItem(player, hand);
         ItemMeta handItemMeta = playerHandItem.getItemMeta();
@@ -32,17 +46,50 @@ public class PortalListener implements Listener {
             PersistentDataContainer handItemPdc = handItemMeta.getPersistentDataContainer();
 
             if (handItemPdc.has(PortalItem.PORTAL_DEVICE_TAG)) {
-                pickUpTestSubject(player);
+                String entityName = entity.getName();
+
+                if (!isEntityAlreadyControlled(entity)) {
+                    player.sendMessage(Component.text("You are now controlling ", NamedTextColor.GRAY)
+                            .append(Component.text(entityName, NamedTextColor.YELLOW))
+                            .append(Component.text('!', NamedTextColor.GRAY)));
+                    pickUpEntity(player, entity);
+                } else {
+                    if (!isPlayerControllerOfEntity(player, entity)) {
+                        player.sendMessage(Component.text(entityName, NamedTextColor.YELLOW)
+                                .append(Component.text(" is not yours!", NamedTextColor.RED)));
+                        return;
+                    }
+
+                    player.sendMessage(Component.text("No longer controlling ", NamedTextColor.RED)
+                            .append(Component.text(entityName, NamedTextColor.YELLOW))
+                            .append(Component.text('!', NamedTextColor.RED)));
+                    dropEntity(player, entity);
+                }
             }
         }
     }
 
-    // todo -> make sure these are using parameters instead of 'testSubject'
-    public void pickUpTestSubject(Player player) {
-        toggleEntityAttributes(testSubject, true);
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        UUID playerId = event.getPlayer().getUniqueId();
+        UUID entityId = mappedPlayerAndEntity.get(playerId);
+
+        if (entityId != null) {
+            Entity entity = Bukkit.getEntity(entityId);
+            toggleEntityAttributes(entity, false);
+        }
+        mappedPlayerAndEntity.remove(playerId);
+    }
+
+    public void pickUpEntity(Player player, Entity entity) {
+        UUID entityId = entity.getUniqueId();
+
+        mappedPlayerAndEntity.putIfAbsent(player.getUniqueId(), entityId);
+        toggleEntityAttributes(entity, true);
 
         LoopHelper.runIndefinitely(0L, 1L, (task) -> {
-            handleTaskPersistence(player, task);
+            mappedEntityAndTask.putIfAbsent(entityId, task);
+            handleTaskPersistence(player, entity);
 
             Location playerLoc = player.getLocation();
             Location modLoc = playerLoc.clone().add(playerLoc.getDirection().multiply(PortalItem.DISTANCE_BETWEEN));
@@ -70,29 +117,33 @@ public class PortalListener implements Listener {
             }
 
             if (solidity) {
-                int highestYAround = testSubject.getWorld()
+                int highestYAround = entity.getWorld()
                         .getHighestBlockYAt(modLoc.getBlockX(), modLoc.getBlockZ());
                 modLoc.setY(highestYAround + 1.0);
             }
 
-            testSubject.teleport(modLoc.clone().add(0, 0.5, 0));
+            entity.teleport(modLoc.clone().add(0, 0.5, 0));
         });
     }
 
-    private void handleTaskPersistence(Player player, BukkitTask hookedTask) {
-        if (!player.isValid()) {
-            toggleEntityAttributes(testSubject, false);
-            hookedTask.cancel();
+    public void dropEntity(Player player, Entity entity) {
+        if (player == null || entity == null) {
+            return;
         }
-        if (!testSubject.isValid()) {
-            hookedTask.cancel();
+        if (!player.isValid() || !entity.isValid()) {
+            return;
         }
-    }
+        UUID playerId = player.getUniqueId();
+        UUID entityId = entity.getUniqueId();
 
-    private void toggleEntityAttributes(Entity entity, boolean toggle) {
-        entity.setGravity(!toggle);
-        entity.setSilent(toggle);
-        entity.setGlowing(toggle);
+        BukkitTask hookedTask = mappedEntityAndTask.get(entityId);
+        if (hookedTask != null) {
+            hookedTask.cancel();
+        }
+        toggleEntityAttributes(entity, false);
+
+        mappedEntityAndTask.remove(entityId);
+        mappedPlayerAndEntity.remove(playerId);
     }
 
     private ItemStack getHeldItem(Player player, EquipmentSlot hand) {
@@ -105,5 +156,37 @@ public class PortalListener implements Listener {
             playerHandItem = playerInventory.getItemInOffHand();
         }
         return playerHandItem;
+    }
+
+    private boolean isEntityAlreadyControlled(Entity entity) {
+        return mappedPlayerAndEntity.containsValue(entity.getUniqueId());
+    }
+
+    private boolean isPlayerControllerOfEntity(Player player, Entity entity) {
+        UUID playerId = player.getUniqueId();
+        UUID entityId = entity.getUniqueId();
+
+        if (!mappedPlayerAndEntity.containsValue(entityId)) {
+            return false;
+        }
+        UUID storedEntityId = mappedPlayerAndEntity.get(playerId);
+        return Objects.equals(entityId, storedEntityId);
+    }
+
+    private void toggleEntityAttributes(Entity entity, boolean toggle) {
+        if (entity != null) {
+            entity.setGravity(!toggle);
+            entity.setSilent(toggle);
+            entity.setGlowing(toggle);
+        }
+    }
+
+    private void handleTaskPersistence(Player player, Entity entity) {
+        if (!player.isValid()) {
+            dropEntity(player, entity);
+        }
+        if (!entity.isValid()) {
+            dropEntity(player, entity);
+        }
     }
 }

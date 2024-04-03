@@ -19,7 +19,7 @@ public class CooldownManager implements Listener {
 
     public void addToCooldown(UUID playerId) {
         // v = current ms (start time)
-        cooldowns.computeIfAbsent(playerId, v -> System.currentTimeMillis());
+        cooldowns.putIfAbsent(playerId, System.currentTimeMillis());
     }
 
     public void removeFromCooldown(UUID playerId) {
