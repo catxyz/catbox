@@ -18,8 +18,8 @@ import java.util.List;
 
 public class UndeadBowItem extends ToyboxItem implements Listener {
 
-    protected static final NamespacedKey UNDEAD_BOW_ARROW_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
-            "undead_bow_arrow",
+    protected static final NamespacedKey UNDEAD_ARROW_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
+            "undead_arrow",
             ToyboxPlugin.get()
     ));
     protected static final long DESPAWN_SECONDS = 4L;
@@ -34,7 +34,7 @@ public class UndeadBowItem extends ToyboxItem implements Listener {
                         .itemId("undead_bow")
                         .useCooldown(Duration.ZERO)
                         .material(Material.BOW)
-                        .insertData(UNDEAD_BOW_ARROW_TAG, PersistentDataType.BOOLEAN, true)
+                        .insertData(UNDEAD_ARROW_TAG, PersistentDataType.BOOLEAN, true)
                         .displayName(Component.text("Undead Bow", NamedTextColor.BLUE))
                         .lore(List.of(
                                 Component.empty(),

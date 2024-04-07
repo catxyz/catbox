@@ -46,6 +46,7 @@ public class ToyboxItemManager {
         addItem(new UndeadBowItem());
         addItem(new ColorStaffItem());
         addItem(new CorrupterItem());
+        addItem(new EverythingPotionItem());
         addItem(new MyPreciousItem());
         addItem(new PassengerEnderPearlItem());
         addItem(new TestificateSpawnerItem());

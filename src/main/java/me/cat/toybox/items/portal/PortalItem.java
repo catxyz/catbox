@@ -16,8 +16,8 @@ import java.util.List;
 
 public class PortalItem extends ToyboxItem {
 
-    protected static final NamespacedKey PORTAL_DEVICE_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
-            "portal_device",
+    protected static final NamespacedKey IS_PORTAL_DEVICE_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
+            "is_portal_device",
             ToyboxPlugin.get()
     ));
     protected static final double DISTANCE_BETWEEN = 3.0d;
@@ -31,7 +31,7 @@ public class PortalItem extends ToyboxItem {
                         ))
                         .itemId("aperture_science_handheld_portal_device")
                         .material(Material.WHITE_CANDLE)
-                        .insertData(PORTAL_DEVICE_TAG, PersistentDataType.BOOLEAN, true)
+                        .insertData(IS_PORTAL_DEVICE_TAG, PersistentDataType.BOOLEAN, true)
                         .displayName(Component.text("Aperture Science Handheld Portal Device", NamedTextColor.WHITE))
                         .lore(List.of(
                                 Component.empty(),

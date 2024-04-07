@@ -106,7 +106,6 @@ public class TimeShifterItem extends ToyboxItem implements Listener {
                     .setType(Material.OAK_SIGN);
 
             Sign sign = (Sign) newSignLocation.getBlock().getState();
-            //sign.getSide(Side.FRONT).line(0, Component.empty()); // test thing!
             sign.getSide(Side.FRONT).line(1, Component.text('^', NamedTextColor.YELLOW));
             sign.getSide(Side.FRONT).line(2, Component.text("Update interval", NamedTextColor.GREEN));
             sign.getSide(Side.FRONT).line(3, Component.text("⚠ (seconds!) ⚠", NamedTextColor.YELLOW));

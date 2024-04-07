@@ -17,8 +17,8 @@ import java.util.List;
 
 public class ExplosiveToyBowItem extends ToyboxItem implements Listener {
 
-    protected static final NamespacedKey EXPLOSIVE_TOY_BOW_ARROW_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
-            "explosive_toy_bow_arrow",
+    protected static final NamespacedKey EXPLOSIVE_ARROW_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
+            "explosive_arrow",
             ToyboxPlugin.get()
     ));
     protected static final int DESPAWN_SECONDS = 4;
@@ -32,7 +32,7 @@ public class ExplosiveToyBowItem extends ToyboxItem implements Listener {
                         ))
                         .itemId("explosive_toy_bow")
                         .material(Material.BOW)
-                        .insertData(EXPLOSIVE_TOY_BOW_ARROW_TAG, PersistentDataType.BOOLEAN, true)
+                        .insertData(EXPLOSIVE_ARROW_TAG, PersistentDataType.BOOLEAN, true)
                         .displayName(Component.text("Explosive Toy Bow", NamedTextColor.RED))
                         .lore(List.of(
                                 Component.empty(),

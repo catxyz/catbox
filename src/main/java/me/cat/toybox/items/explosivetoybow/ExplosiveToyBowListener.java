@@ -48,7 +48,7 @@ public class ExplosiveToyBowListener implements Listener, EntityLifetimeLooper {
 
     private void wrapArrowData(Arrow arrow) {
         arrow.getPersistentDataContainer()
-                .set(ExplosiveToyBowItem.EXPLOSIVE_TOY_BOW_ARROW_TAG, PersistentDataType.BOOLEAN, true);
+                .set(ExplosiveToyBowItem.EXPLOSIVE_ARROW_TAG, PersistentDataType.BOOLEAN, true);
 
         BlockDisplay blockDisplay = arrow.getWorld().spawn(arrow.getLocation(), BlockDisplay.class);
         blockDisplay.setBlock(Bukkit.createBlockData(Material.TNT));
@@ -64,8 +64,9 @@ public class ExplosiveToyBowListener implements Listener, EntityLifetimeLooper {
             if (bow != null) {
                 PersistentDataContainer bowPdc = bow.getItemMeta().getPersistentDataContainer();
 
-                if (bowPdc.has(ExplosiveToyBowItem.EXPLOSIVE_TOY_BOW_ARROW_TAG)) {
+                if (bowPdc.has(ExplosiveToyBowItem.EXPLOSIVE_ARROW_TAG)) {
                     Arrow arrow = (Arrow) event.getProjectile();
+
                     wrapArrowData(arrow);
                     defineLifetimeFor(arrow);
                 }
@@ -78,7 +79,7 @@ public class ExplosiveToyBowListener implements Listener, EntityLifetimeLooper {
         if (event.getEntity() instanceof Arrow arrow) {
             PersistentDataContainer arrowPdc = arrow.getPersistentDataContainer();
 
-            if (arrowPdc.has(ExplosiveToyBowItem.EXPLOSIVE_TOY_BOW_ARROW_TAG)) {
+            if (arrowPdc.has(ExplosiveToyBowItem.EXPLOSIVE_ARROW_TAG)) {
                 arrow.getWorld().createExplosion(arrow.getLocation(), getExplosionPower(), false, false);
                 arrow.remove();
             }

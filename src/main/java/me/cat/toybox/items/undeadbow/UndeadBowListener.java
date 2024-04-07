@@ -44,7 +44,7 @@ public class UndeadBowListener implements Listener, EntityLifetimeLooper {
             if (bow != null) {
                 PersistentDataContainer bowPdc = bow.getItemMeta().getPersistentDataContainer();
 
-                if (bowPdc.has(UndeadBowItem.UNDEAD_BOW_ARROW_TAG)) {
+                if (bowPdc.has(UndeadBowItem.UNDEAD_ARROW_TAG)) {
                     event.getProjectile().remove();
 
                     player.playSound(player.getEyeLocation(), Sound.ENTITY_CAT_PURREOW, 1f, 1f);

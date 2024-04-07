@@ -54,9 +54,7 @@ public class MyPreciousItem extends ToyboxItem {
                 PotionEffectType.DARKNESS,
                 10 * 20,
                 255,
-                false,
-                true,
-                false
+                false, true, false
         ));
 
         if (!isSoundEffectPlaying) {
@@ -96,9 +94,7 @@ public class MyPreciousItem extends ToyboxItem {
                                 PotionEffectType.LEVITATION,
                                 10 * 20,
                                 127,
-                                false,
-                                true,
-                                false
+                                false, true, false
                         ));
                         player.playSound(player.getLocation(), Sound.ENTITY_ILLUSIONER_CAST_SPELL, 10f, 0f);
 

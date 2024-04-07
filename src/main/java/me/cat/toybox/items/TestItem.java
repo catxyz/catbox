@@ -4,6 +4,7 @@ import me.cat.toybox.impl.abstraction.item.ToyboxItem;
 import me.cat.toybox.impl.abstraction.item.ToyboxItemBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
@@ -37,7 +38,7 @@ public class TestItem extends ToyboxItem {
     public void onUse(PlayerInteractEvent event) {
         Player player = event.getPlayer();
 
-        player.sendMessage(Component.text("hungry? fed!", NamedTextColor.YELLOW));
+        player.sendMessage(Component.text("Hunger has left the chat", NamedTextColor.GRAY, TextDecoration.ITALIC));
         player.setFoodLevel(100);
     }
 }

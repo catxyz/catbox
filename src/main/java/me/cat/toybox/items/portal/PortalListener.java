@@ -19,6 +19,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.scheduler.BukkitTask;
+import org.spigotmc.event.entity.EntityMountEvent;
 
 import java.util.Map;
 import java.util.Objects;
@@ -45,12 +46,12 @@ public class PortalListener implements Listener {
         if (handItemMeta != null) {
             PersistentDataContainer handItemPdc = handItemMeta.getPersistentDataContainer();
 
-            if (handItemPdc.has(PortalItem.PORTAL_DEVICE_TAG)) {
+            if (handItemPdc.has(PortalItem.IS_PORTAL_DEVICE_TAG)) {
                 String entityName = entity.getName();
 
                 if (!isEntityAlreadyControlled(entity)) {
                     player.sendMessage(Component.text("You are now controlling ", NamedTextColor.GRAY)
-                            .append(Component.text(entityName, NamedTextColor.YELLOW))
+                            .append(getEntityName(entity))
                             .append(Component.text('!', NamedTextColor.GRAY)));
                     pickUpEntity(player, entity);
                 } else {
@@ -61,9 +62,34 @@ public class PortalListener implements Listener {
                     }
 
                     player.sendMessage(Component.text("No longer controlling ", NamedTextColor.RED)
-                            .append(Component.text(entityName, NamedTextColor.YELLOW))
+                            .append(getEntityName(entity))
                             .append(Component.text('!', NamedTextColor.RED)));
                     dropEntity(player, entity);
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onEntityMount(EntityMountEvent event) {
+        if (event.getEntity() instanceof Player player) {
+            PlayerInventory playerInventory = player.getInventory();
+            ItemStack playerHandItem;
+
+            if (!playerInventory.getItemInMainHand().isEmpty()) {
+                playerHandItem = playerInventory.getItemInMainHand();
+            } else if (!playerInventory.getItemInOffHand().isEmpty()) {
+                playerHandItem = playerInventory.getItemInOffHand();
+            } else {
+                playerHandItem = null;
+            }
+
+            if (playerHandItem != null) {
+                PersistentDataContainer handItemPdc = playerHandItem.getItemMeta()
+                        .getPersistentDataContainer();
+
+                if (handItemPdc.has(PortalItem.IS_PORTAL_DEVICE_TAG)) {
+                    event.setCancelled(true);
                 }
             }
         }
@@ -75,7 +101,7 @@ public class PortalListener implements Listener {
         UUID entityId = mappedPlayerAndEntity.get(playerId);
 
         if (entityId != null) {
-            Entity entity = Bukkit.getEntity(entityId);
+            Entity entity = Bukkit.getServer().getEntity(entityId);
             toggleEntityAttributes(entity, false);
         }
         mappedPlayerAndEntity.remove(playerId);
@@ -156,6 +182,21 @@ public class PortalListener implements Listener {
             playerHandItem = playerInventory.getItemInOffHand();
         }
         return playerHandItem;
+    }
+
+    private Component getEntityName(Entity entity) {
+        Component entityCustomName = entity.customName();
+
+        if (entityCustomName != null) {
+            boolean hasColor = entityCustomName.hasStyling();
+            if (hasColor) {
+                return entityCustomName;
+            } else {
+                return entityCustomName.color(NamedTextColor.YELLOW);
+            }
+        } else {
+            return Component.text(entity.getName(), NamedTextColor.YELLOW);
+        }
     }
 
     private boolean isEntityAlreadyControlled(Entity entity) {

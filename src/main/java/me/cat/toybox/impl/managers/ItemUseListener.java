@@ -24,7 +24,8 @@ public class ItemUseListener implements Listener {
     private final ToyboxItemManager toyboxItemManager;
     private final CooldownManager cooldownManager;
 
-    public ItemUseListener(ToyboxItemManager toyboxItemManager, CooldownManager cooldownManager) {
+    public ItemUseListener(ToyboxItemManager toyboxItemManager,
+                           CooldownManager cooldownManager) {
         this.toyboxItemManager = toyboxItemManager;
         this.cooldownManager = cooldownManager;
     }
