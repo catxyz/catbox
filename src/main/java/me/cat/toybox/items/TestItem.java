@@ -38,7 +38,7 @@ public class TestItem extends ToyboxItem {
     public void onUse(PlayerInteractEvent event) {
         Player player = event.getPlayer();
 
-        player.sendMessage(Component.text("Hunger has left the chat", NamedTextColor.GRAY, TextDecoration.ITALIC));
+        player.sendMessage(Component.text("\uD83D\uDD1A Hunger has left the chat", NamedTextColor.GRAY, TextDecoration.ITALIC));
         player.setFoodLevel(100);
     }
 }
