@@ -20,9 +20,20 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ExplosiveToyBowListener implements Listener, EntityLifetimeLooper {
 
+    private void wrapArrowData(AbstractArrow arrow) {
+        arrow.getPersistentDataContainer()
+                .set(ExplosiveToyBowItem.EXPLOSIVE_ARROW_TAG, PersistentDataType.BOOLEAN, true);
+
+        BlockDisplay blockDisplay = arrow.getWorld().spawn(arrow.getLocation(), BlockDisplay.class);
+        blockDisplay.setBlock(Bukkit.createBlockData(Material.TNT));
+        blockDisplay.setBillboard(Display.Billboard.CENTER);
+
+        arrow.addPassenger(blockDisplay);
+    }
+
     @Override
     public void defineLifetimeFor(Entity... entities) {
-        Arrow arrow = (Arrow) entities[0];
+        AbstractArrow arrow = (AbstractArrow) entities[0];
         BlockDisplay tntBlockDisplay = (BlockDisplay) arrow.getPassengers().get(0);
 
         AtomicInteger ticksPassed = new AtomicInteger();
@@ -46,17 +57,6 @@ public class ExplosiveToyBowListener implements Listener, EntityLifetimeLooper {
         });
     }
 
-    private void wrapArrowData(Arrow arrow) {
-        arrow.getPersistentDataContainer()
-                .set(ExplosiveToyBowItem.EXPLOSIVE_ARROW_TAG, PersistentDataType.BOOLEAN, true);
-
-        BlockDisplay blockDisplay = arrow.getWorld().spawn(arrow.getLocation(), BlockDisplay.class);
-        blockDisplay.setBlock(Bukkit.createBlockData(Material.TNT));
-        blockDisplay.setBillboard(Display.Billboard.CENTER);
-
-        arrow.addPassenger(blockDisplay);
-    }
-
     @EventHandler
     public void onProjectileShoot(EntityShootBowEvent event) {
         if (event.getEntity() instanceof Player) {
@@ -65,7 +65,7 @@ public class ExplosiveToyBowListener implements Listener, EntityLifetimeLooper {
                 PersistentDataContainer bowPdc = bow.getItemMeta().getPersistentDataContainer();
 
                 if (bowPdc.has(ExplosiveToyBowItem.EXPLOSIVE_ARROW_TAG)) {
-                    Arrow arrow = (Arrow) event.getProjectile();
+                    AbstractArrow arrow = (AbstractArrow) event.getProjectile();
 
                     wrapArrowData(arrow);
                     defineLifetimeFor(arrow);
@@ -76,7 +76,7 @@ public class ExplosiveToyBowListener implements Listener, EntityLifetimeLooper {
 
     @EventHandler
     public void onProjectileHit(ProjectileHitEvent event) {
-        if (event.getEntity() instanceof Arrow arrow) {
+        if (event.getEntity() instanceof AbstractArrow arrow) {
             PersistentDataContainer arrowPdc = arrow.getPersistentDataContainer();
 
             if (arrowPdc.has(ExplosiveToyBowItem.EXPLOSIVE_ARROW_TAG)) {

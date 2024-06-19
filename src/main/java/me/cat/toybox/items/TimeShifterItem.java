@@ -4,12 +4,16 @@ import com.destroystokyo.paper.MaterialTags;
 import com.google.common.base.Preconditions;
 import me.cat.toybox.ToyboxPlugin;
 import me.cat.toybox.helpers.LieDetectionHelper;
+import me.cat.toybox.helpers.LoopHelper;
 import me.cat.toybox.impl.abstraction.item.ToyboxItem;
 import me.cat.toybox.impl.abstraction.item.ToyboxItemBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.*;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.block.sign.Side;
@@ -84,14 +88,14 @@ public class TimeShifterItem extends ToyboxItem implements Listener {
                 player.sendMessage(Component.text("Time is shifting!", NamedTextColor.GREEN));
 
                 AtomicLong time = new AtomicLong(world.getFullTime());
-                Bukkit.getServer().getScheduler().runTaskTimer(ToyboxPlugin.get(), (task) -> {
+                LoopHelper.runIndefinitely(0L, 1L, (task) -> {
                     timeTask.set(task);
 
                     if (isUpdateIntervalSecondsValueSet()) {
                         time.getAndAdd(updateIntervalSecondsValue * 20L);
                         world.setFullTime(time.get());
                     }
-                }, 0L, 1L);
+                });
             }
         }
 
@@ -100,7 +104,7 @@ public class TimeShifterItem extends ToyboxItem implements Listener {
     private boolean setAndOpenedSignAt(Player player) {
         Location newSignLocation = player.getEyeLocation()
                 .clone()
-                .add(0.5d, 1.0d, 0.5d);
+                .add(0.5, 1, 0.5);
         if (newSignLocation.getBlock().getType() == Material.AIR) {
             newSignLocation.getBlock()
                     .setType(Material.OAK_SIGN);
@@ -118,10 +122,7 @@ public class TimeShifterItem extends ToyboxItem implements Listener {
 
             this.timeInputSignLocation = newSignLocation;
 
-            Bukkit.getServer()
-                    .getScheduler()
-                    .runTaskLater(ToyboxPlugin.get(),
-                            () -> player.openSign(sign, Side.FRONT), ((6500L * 20L) / 1000L) / 20L);
+            LoopHelper.runAfter(((6500L * 20L) / 1000L) / 20L, (task) -> player.openSign(sign, Side.FRONT));
             someoneAlreadyUsingItem = true;
 
             return true;
@@ -150,7 +151,7 @@ public class TimeShifterItem extends ToyboxItem implements Listener {
             String storedSignOwnerUuid = signPdc.get(CUSTOM_SIGN_OWNER_UUID_TAG, PersistentDataType.STRING);
 
             if (Objects.equals(storedSignOwnerUuid, player.getUniqueId().toString())) {
-                Bukkit.getServer().getScheduler().runTaskLater(ToyboxPlugin.get(), () -> {
+                LoopHelper.runAfter(5L, (task) -> {
                     Sign updatedSign = (Sign) event.getBlock().getState(false);
                     updatedSign.update();
                     String firstSignLine = ((TextComponent) updatedSign.getSide(Side.FRONT).line(0)).content();
@@ -177,7 +178,7 @@ public class TimeShifterItem extends ToyboxItem implements Listener {
                         }
                         makeSignMagicallyDisappear();
                     }
-                }, 5L);
+                });
             } else {
                 player.sendMessage(Component.text("This is not your sign!", NamedTextColor.RED));
                 event.setCancelled(true);
@@ -214,10 +215,7 @@ public class TimeShifterItem extends ToyboxItem implements Listener {
     }
 
     private void makeSignMagicallyDisappear() {
-        Bukkit.getServer()
-                .getScheduler()
-                .runTaskLater(ToyboxPlugin.get(),
-                        () -> timeInputSignLocation.getBlock().setType(Material.AIR), 10L);
+        LoopHelper.runAfter(10L, (task) -> timeInputSignLocation.getBlock().setType(Material.AIR));
     }
 
     private void cancelTimeTask(Player player, boolean shouldSendErrorMessage) {

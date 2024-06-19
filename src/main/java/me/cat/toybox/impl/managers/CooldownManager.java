@@ -17,8 +17,8 @@ public class CooldownManager implements Listener {
         this.cooldowns = Maps.newHashMap();
     }
 
+    // k = player ID, v = current ms (start time)
     public void addToCooldown(UUID playerId) {
-        // v = current ms (start time)
         cooldowns.putIfAbsent(playerId, System.currentTimeMillis());
     }
 

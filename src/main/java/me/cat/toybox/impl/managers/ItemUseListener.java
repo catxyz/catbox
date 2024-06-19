@@ -75,7 +75,7 @@ public class ItemUseListener implements Listener {
                             }
                         }
                     }
-                }, () -> player.sendMessage(Component.text("This item wasn't found!", NamedTextColor.RED)));
+                }, () -> player.sendMessage(Component.text("This is a legacy item!", NamedTextColor.RED)));
             }
         }
     }
