@@ -2,7 +2,6 @@ package me.cat.catbox.items.passengerenderpearl;
 
 import com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent;
 import com.google.common.collect.Lists;
-import me.cat.catbox.CatboxPlugin;
 import me.cat.catbox.helpers.Helper;
 import me.cat.catbox.helpers.LoopHelper;
 import me.cat.catbox.impl.abstraction.interfaces.EntityLifetimeLooper;
@@ -46,7 +45,7 @@ public class PassengerEnderPearlListener implements Listener, EntityLifetimeLoop
         AtomicInteger ticksPassed = new AtomicInteger();
         AtomicInteger enderPearlSecondsAlive = new AtomicInteger();
 
-        Bukkit.getServer().getScheduler().runTaskTimer(CatboxPlugin.get(), (task) -> {
+        LoopHelper.runIndefinitely(0L, 1L, (task) -> {
             ticksPassed.getAndIncrement();
             if (ticksPassed.get() % 20 == 0) {
                 enderPearlSecondsAlive.getAndIncrement();
@@ -68,7 +67,7 @@ public class PassengerEnderPearlListener implements Listener, EntityLifetimeLoop
             if (ACTIVE_ENDER_PEARLS.isEmpty()) {
                 task.cancel();
             }
-        }, 0L, 1L);
+        });
     }
 
     @EventHandler
