@@ -79,7 +79,7 @@ public class Helper {
 
     public static <T> T randListElem(List<T> list) {
         if (list.size() == 1) {
-            return list.get(0);
+            return list.getFirst();
         }
         return list.get(ThreadLocalRandom.current().nextInt(list.size()));
     }
@@ -152,6 +152,7 @@ public class Helper {
                 }
             }
         }
+
         affectedBlocksConsumer.accept(affectedBlocksList);
     }
 }

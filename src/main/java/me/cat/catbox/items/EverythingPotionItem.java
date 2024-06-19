@@ -7,14 +7,13 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Material;
+import org.bukkit.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class EverythingPotionItem extends CatboxItem {
@@ -36,7 +35,7 @@ public class EverythingPotionItem extends CatboxItem {
                                 Component.text("Refreshing!", NamedTextColor.GRAY)
                         ))
                         .itemFlags(List.of(
-                                ItemFlag.HIDE_ITEM_SPECIFICS
+                                ItemFlag.HIDE_ADDITIONAL_TOOLTIP
                         ))
                         .cancelUseInteraction(true)
         );
@@ -54,7 +53,7 @@ public class EverythingPotionItem extends CatboxItem {
     }
 
     private List<PotionEffect> getAllPotionEffects() {
-        return Arrays.stream(PotionEffectType.values())
+        return Registry.EFFECT.stream()
                 .map(potionEffectType -> new PotionEffect(
                         potionEffectType,
                         10 * 20,

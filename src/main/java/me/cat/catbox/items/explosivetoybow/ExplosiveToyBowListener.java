@@ -34,7 +34,7 @@ public class ExplosiveToyBowListener implements Listener, EntityLifetimeLooper {
     @Override
     public void defineLifetimeFor(Entity... entities) {
         AbstractArrow arrow = (AbstractArrow) entities[0];
-        BlockDisplay tntBlockDisplay = (BlockDisplay) arrow.getPassengers().get(0);
+        BlockDisplay tntBlockDisplay = (BlockDisplay) arrow.getPassengers().getFirst();
 
         AtomicInteger ticksPassed = new AtomicInteger();
         AtomicInteger arrowSecondsAlive = new AtomicInteger();

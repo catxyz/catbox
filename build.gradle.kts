@@ -1,6 +1,6 @@
 plugins {
-    id("xyz.jpenilla.run-paper") version "2.3.0"
     java
+    id("xyz.jpenilla.run-paper") version "2.3.0"
 }
 
 java {

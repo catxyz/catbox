@@ -41,7 +41,7 @@ public class TestificateSpawnerItem extends CatboxItem {
                         .itemId("testificate_spawner")
                         .material(Material.SPAWNER)
                         .itemFlags(List.of(
-                                ItemFlag.HIDE_ITEM_SPECIFICS
+                                ItemFlag.HIDE_ADDITIONAL_TOOLTIP
                         ))
                         .displayName(Component.text("Testificate Spawner", NamedTextColor.RED))
                         .lore(List.of(
@@ -75,8 +75,8 @@ public class TestificateSpawnerItem extends CatboxItem {
             }
 
             player.getWorld().spawn(playerTargetBlock.getLocation().clone().add(0, 1, 0), Villager.class, villager -> {
-                villager.setCustomNameVisible(true);
                 villager.customName(Component.text(currentRandomName, currentRandomColor));
+                villager.setCustomNameVisible(true);
             });
         }
     }

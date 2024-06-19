@@ -39,7 +39,7 @@ public class UndeadBowItem extends CatboxItem implements Listener {
                         .lore(List.of(
                                 Component.empty(),
                                 Component.text("Dead inside!", NamedTextColor.GRAY),
-                                Component.text("... or is it?", NamedTextColor.GRAY)
+                                Component.text("... Or is it?", NamedTextColor.GRAY)
                         ))
         );
     }
