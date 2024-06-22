@@ -19,7 +19,7 @@ import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
-public class Helper {
+public class MiscHelper {
 
     public static Component getGiveItemMessageComponent(String itemId, String playerName) {
         return Component.text("Gave ", NamedTextColor.GREEN)
@@ -40,7 +40,7 @@ public class Helper {
                 .append(Component.text("use ", NamedTextColor.RED))
                 .append(displayName)
                 .append(Component.text(" again in ", NamedTextColor.RED))
-                .append(Component.text(Helper.formatDuration(useCooldown), NamedTextColor.YELLOW))
+                .append(Component.text(MiscHelper.formatDuration(useCooldown), NamedTextColor.YELLOW))
                 .append(Component.text('!', NamedTextColor.RED));
     }
 
@@ -97,6 +97,10 @@ public class Helper {
     }
 
     public static void removeEntitiesInStyle(Particle particle, int count, Entity... entities) {
+        if (entities.length == 0) {
+            return;
+        }
+
         Arrays.stream(entities)
                 .filter(Entity::isValid)
                 .map(Entity::getLocation)
@@ -126,13 +130,18 @@ public class Helper {
 
         for (int x = centerX - radius; x <= centerX + radius; x++) {
             for (int z = centerZ - radius; z <= centerZ + radius; z++) {
-                double distance = Math.sqrt(Math.pow(x - centerX, 2.0d) + Math.pow(z - centerZ, 2.0d));
+                double distance = Math.sqrt(Math.pow(x - centerX, 2.0) + Math.pow(z - centerZ, 2.0));
 
                 if (distance <= radius) {
                     int y = world.getHighestBlockYAt(x, z);
                     Location blockLocation = new Location(world, x, y, z);
 
                     Block block = blockLocation.getBlock();
+                    affectedBlocksList.add(block);
+
+                    if (materials.isEmpty()) {
+                        continue;
+                    }
 
                     if (block.getType() != Material.AIR && !block.isLiquid()) {
                         Material randMaterial = materials.get(ThreadLocalRandom.current().nextInt(materials.size()));
@@ -145,8 +154,6 @@ public class Helper {
                             } else {
                                 block.setType(randMaterial);
                             }
-
-                            affectedBlocksList.add(block);
                         }
                     }
                 }
