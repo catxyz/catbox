@@ -1,7 +1,6 @@
 package me.cat.catbox.items.portal;
 
-import com.google.common.base.Preconditions;
-import me.cat.catbox.CatboxPlugin;
+import me.cat.catbox.helpers.NamespaceHelper;
 import me.cat.catbox.impl.abstraction.item.CatboxItem;
 import me.cat.catbox.impl.abstraction.item.CatboxItemBuilder;
 import net.kyori.adventure.text.Component;
@@ -16,11 +15,8 @@ import java.util.List;
 
 public class PortalItem extends CatboxItem {
 
-    protected static final NamespacedKey IS_PORTAL_DEVICE_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
-            "is_portal_device",
-            CatboxPlugin.get()
-    ));
-    protected static final double DISTANCE_BETWEEN = 3.0d;
+    protected static final NamespacedKey IS_PORTAL_DEVICE_TAG = NamespaceHelper.newSelfPluginTag("is_portal_device");
+    protected static final double DISTANCE_BETWEEN = 3.0;
 
     public PortalItem() {
         super(

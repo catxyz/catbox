@@ -1,11 +1,9 @@
 package me.cat.catbox.items.explosivetoybow;
 
-import me.cat.catbox.helpers.Helper;
 import me.cat.catbox.helpers.LoopHelper;
+import me.cat.catbox.helpers.MiscHelper;
 import me.cat.catbox.impl.abstraction.interfaces.EntityLifetimeLooper;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,7 +12,9 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.util.Vector;
 
+import java.util.Collections;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -33,6 +33,9 @@ public class ExplosiveToyBowListener implements Listener, EntityLifetimeLooper {
 
     @Override
     public void defineLifetimeFor(Entity... entities) {
+        if (entities.length == 0) {
+            return;
+        }
         AbstractArrow arrow = (AbstractArrow) entities[0];
         BlockDisplay tntBlockDisplay = (BlockDisplay) arrow.getPassengers().getFirst();
 
@@ -46,12 +49,12 @@ public class ExplosiveToyBowListener implements Listener, EntityLifetimeLooper {
             }
 
             if (!arrow.isValid()) {
-                Helper.removeEntitiesInStyle(Particle.SONIC_BOOM, 1, tntBlockDisplay);
+                MiscHelper.removeEntitiesInStyle(Particle.GUST_EMITTER_LARGE, 1, tntBlockDisplay);
                 task.cancel();
             }
 
             if (arrowSecondsAlive.get() >= ExplosiveToyBowItem.DESPAWN_SECONDS) {
-                Helper.removeEntitiesInStyle(Particle.SONIC_BOOM, 1, arrow, tntBlockDisplay);
+                MiscHelper.removeEntitiesInStyle(Particle.GUST_EMITTER_LARGE, 1, arrow, tntBlockDisplay);
                 task.cancel();
             }
         });
@@ -80,13 +83,25 @@ public class ExplosiveToyBowListener implements Listener, EntityLifetimeLooper {
             PersistentDataContainer arrowPdc = arrow.getPersistentDataContainer();
 
             if (arrowPdc.has(ExplosiveToyBowItem.EXPLOSIVE_ARROW_TAG)) {
-                arrow.getWorld().createExplosion(arrow.getLocation(), getExplosionPower(), false, false);
+                World world = arrow.getWorld();
+                Location arrowLoc = arrow.getLocation();
+
+                MiscHelper.createSurfaceLayer(world, arrowLoc, 3,
+                        Collections.emptyList(),
+                        true,
+                        affectedBlocks -> affectedBlocks.forEach(block -> {
+                            Location modBlockLoc = block.getLocation()
+                                    .clone()
+                                    .add(new Vector(0, 1.5, 0));
+                            world.spawnParticle(Particle.GUST_EMITTER_SMALL, modBlockLoc, 1);
+                        }));
+                world.createExplosion(arrowLoc, getExplosionPower(), false, false);
                 arrow.remove();
             }
         }
     }
 
     private float getExplosionPower() {
-        return ThreadLocalRandom.current().nextFloat(2f, 2.5f);
+        return ThreadLocalRandom.current().nextFloat(1.5f, 3.0f);
     }
 }

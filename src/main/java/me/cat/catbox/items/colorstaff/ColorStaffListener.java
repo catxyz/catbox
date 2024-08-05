@@ -2,8 +2,9 @@ package me.cat.catbox.items.colorstaff;
 
 import com.destroystokyo.paper.MaterialTags;
 import me.cat.catbox.CatboxPlugin;
-import me.cat.catbox.helpers.Helper;
+import me.cat.catbox.helpers.MiscHelper;
 import me.cat.catbox.impl.abstraction.interfaces.CustomUseInteraction;
+import me.cat.catbox.impl.abstraction.interfaces.EntityLifetimeLooper;
 import me.cat.catbox.impl.abstraction.item.SharedItemTags;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -23,16 +24,20 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ColorStaffListener implements Listener, CustomUseInteraction {
+public class ColorStaffListener implements Listener, EntityLifetimeLooper, CustomUseInteraction {
 
     private static final List<Material> HEAD_COLORS;
-    private static final int DESPAWN_SECONDS = 3;
     private Player shooter;
 
     static {
         HEAD_COLORS = Arrays.stream(Material.values())
                 .filter(MaterialTags.STAINED_GLASS::isTagged)
                 .toList();
+    }
+
+    @Override
+    public void defineLifetimeFor(Entity... entities) {
+        // todo
     }
 
     @Override
@@ -75,7 +80,7 @@ public class ColorStaffListener implements Listener, CustomUseInteraction {
                 }
                 armorStandSecondsAlive.getAndIncrement();
 
-                if (armorStandSecondsAlive.get() >= DESPAWN_SECONDS) {
+                if (armorStandSecondsAlive.get() >= ColorStaffItem.DESPAWN_SECONDS) {
                     spawnCustomFirework(armorStand.getWorld(), armorStand.getLocation());
                     armorStand.remove();
                     task.cancel();
@@ -88,7 +93,7 @@ public class ColorStaffListener implements Listener, CustomUseInteraction {
         Bukkit.getServer().getScheduler().runTaskTimer(CatboxPlugin.get(), (task) -> {
             Location armorStandLocation = armorStand.getLocation();
 
-            if (Helper.isLooselyOnGround(armorStandLocation)) {
+            if (MiscHelper.isLooselyOnGround(armorStandLocation)) {
                 Location missLoc = armorStandLocation.clone().add(0.0d, 0.9d, 0.0d);
                 spawnCustomFirework(armorStand.getWorld(), missLoc);
                 armorStand.remove();
@@ -126,7 +131,7 @@ public class ColorStaffListener implements Listener, CustomUseInteraction {
                 ));
                 livingEntity.damage(damageToDeal);
                 shooter.sendMessage(Component.text("You dealt ", NamedTextColor.GRAY)
-                        .append(Component.text(Helper.formatNum(damageToDeal), NamedTextColor.RED))
+                        .append(Component.text(MiscHelper.formatNum(damageToDeal), NamedTextColor.RED))
                         .append(Component.text(" damage to ", NamedTextColor.GRAY))
                         .append(Component.text(livingEntity.getName(), NamedTextColor.YELLOW))
                         .append(Component.text('!', NamedTextColor.GRAY)));

@@ -39,7 +39,7 @@ public class TestItem extends CatboxItem {
     public void onUse(PlayerInteractEvent event) {
         Player player = event.getPlayer();
 
-        player.sendMessage(Component.text("\uD83D\uDD1A Hunger has left the chat",
+        player.sendMessage(Component.text("<- Hunger has left the chat",
                 NamedTextColor.GRAY, TextDecoration.ITALIC));
         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_DRINK, 10f, 1.1f);
         player.setFoodLevel(20);

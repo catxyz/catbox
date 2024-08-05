@@ -1,7 +1,6 @@
 package me.cat.catbox.items.undeadbow;
 
-import com.google.common.base.Preconditions;
-import me.cat.catbox.CatboxPlugin;
+import me.cat.catbox.helpers.NamespaceHelper;
 import me.cat.catbox.impl.abstraction.item.CatboxItem;
 import me.cat.catbox.impl.abstraction.item.CatboxItemBuilder;
 import net.kyori.adventure.text.Component;
@@ -18,10 +17,7 @@ import java.util.List;
 
 public class UndeadBowItem extends CatboxItem implements Listener {
 
-    protected static final NamespacedKey UNDEAD_ARROW_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
-            "undead_arrow",
-            CatboxPlugin.get()
-    ));
+    protected static final NamespacedKey UNDEAD_ARROW_TAG = NamespaceHelper.newSelfPluginTag("undead_arrow");
     protected static final long DESPAWN_SECONDS = 4L;
 
     public UndeadBowItem() {

@@ -1,7 +1,6 @@
 package me.cat.catbox.items.passengerenderpearl;
 
-import com.google.common.base.Preconditions;
-import me.cat.catbox.CatboxPlugin;
+import me.cat.catbox.helpers.NamespaceHelper;
 import me.cat.catbox.impl.abstraction.item.CatboxItem;
 import me.cat.catbox.impl.abstraction.item.CatboxItemBuilder;
 import net.kyori.adventure.text.Component;
@@ -18,10 +17,7 @@ import java.util.List;
 public class PassengerEnderPearlItem extends CatboxItem implements Listener {
 
     protected static final String PASSENGER_ENDER_PEARL_ITEM_ID = "passenger_ender_pearl";
-    protected static final NamespacedKey IS_PASSENGER_ENDER_PEARL_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
-            "is_passenger_ender_pearl",
-            CatboxPlugin.get()
-    ));
+    protected static final NamespacedKey IS_PASSENGER_ENDER_PEARL_TAG = NamespaceHelper.newSelfPluginTag("is_passenger_ender_pearl");
     protected static final int DESPAWN_SECONDS = 30;
     private final PassengerEnderPearlListener passengerEnderPearlListener;
 

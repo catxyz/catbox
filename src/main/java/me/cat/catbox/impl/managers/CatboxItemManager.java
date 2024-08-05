@@ -3,12 +3,13 @@ package me.cat.catbox.impl.managers;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import me.cat.catbox.CatboxPlugin;
-import me.cat.catbox.helpers.Helper;
+import me.cat.catbox.helpers.MiscHelper;
 import me.cat.catbox.impl.abstraction.item.CatboxItem;
 import me.cat.catbox.impl.abstraction.item.CatboxItemBuilder;
 import me.cat.catbox.impl.abstraction.sharedlisteners.ArmorStandManipulateListener;
 import me.cat.catbox.impl.abstraction.sharedlisteners.FireworkDamageListener;
 import me.cat.catbox.items.*;
+import me.cat.catbox.items.amaceing.AmaceingItem;
 import me.cat.catbox.items.colorstaff.ColorStaffItem;
 import me.cat.catbox.items.explosivetoybow.ExplosiveToyBowItem;
 import me.cat.catbox.items.passengerenderpearl.PassengerEnderPearlItem;
@@ -43,14 +44,15 @@ public class CatboxItemManager {
     }
 
     private void registerItems() {
+        addItem(new AmaceingItem());
+        addItem(new ColorStaffItem());
         addItem(new ExplosiveToyBowItem());
+        addItem(new PassengerEnderPearlItem());
         addItem(new PortalItem());
         addItem(new UndeadBowItem());
-        addItem(new ColorStaffItem());
         addItem(new CorrupterItem());
         addItem(new EverythingPotionItem());
         addItem(new MyPreciousItem());
-        addItem(new PassengerEnderPearlItem());
         addItem(new TestificateSpawnerItem());
         addItem(new TestItem());
         addItem(new TimeShifterItem());
@@ -83,7 +85,7 @@ public class CatboxItemManager {
 
     public void giveAllItems(Player player) {
         mappedItemIdAndStack.forEach((itemId, itemStack) -> {
-            player.sendMessage(Helper.getGiveItemMessageComponent(itemId, player.getName()));
+            player.sendMessage(MiscHelper.getGiveItemMessageComponent(itemId, player.getName()));
             player.getInventory().addItem(itemStack);
         });
     }

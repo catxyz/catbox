@@ -1,10 +1,9 @@
 package me.cat.catbox.items;
 
 import com.destroystokyo.paper.MaterialTags;
-import com.google.common.base.Preconditions;
-import me.cat.catbox.CatboxPlugin;
 import me.cat.catbox.helpers.LieDetectionHelper;
 import me.cat.catbox.helpers.LoopHelper;
+import me.cat.catbox.helpers.NamespaceHelper;
 import me.cat.catbox.impl.abstraction.item.CatboxItem;
 import me.cat.catbox.impl.abstraction.item.CatboxItemBuilder;
 import net.kyori.adventure.text.Component;
@@ -36,14 +35,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class TimeShifterItem extends CatboxItem implements Listener {
 
-    private static final NamespacedKey IS_CUSTOM_SIGN_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
-            "is_custom_sign",
-            CatboxPlugin.get()
-    ));
-    private static final NamespacedKey CUSTOM_SIGN_OWNER_UUID_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
-            "custom_sign_owner_uuid",
-            CatboxPlugin.get()
-    ));
+    private static final NamespacedKey IS_CUSTOM_SIGN_TAG = NamespaceHelper.newSelfPluginTag("is_custom_sign");
+    private static final NamespacedKey CUSTOM_SIGN_OWNER_UUID_TAG = NamespaceHelper.newSelfPluginTag("custom_sign_owner_uuid");
     private final AtomicReference<BukkitTask> timeTask = new AtomicReference<>(null);
     private Location timeInputSignLocation;
     private int updateIntervalSecondsValue = 0;
@@ -112,7 +105,7 @@ public class TimeShifterItem extends CatboxItem implements Listener {
             Sign sign = (Sign) newSignLocation.getBlock().getState();
             sign.getSide(Side.FRONT).line(1, Component.text('^', NamedTextColor.YELLOW));
             sign.getSide(Side.FRONT).line(2, Component.text("Update interval", NamedTextColor.GREEN));
-            sign.getSide(Side.FRONT).line(3, Component.text("⚠ (seconds!) ⚠", NamedTextColor.YELLOW));
+            sign.getSide(Side.FRONT).line(3, Component.text("-> (seconds!) <-", NamedTextColor.YELLOW));
 
             PersistentDataContainer signPdc = sign.getPersistentDataContainer();
             signPdc.set(IS_CUSTOM_SIGN_TAG, PersistentDataType.BOOLEAN, true);
@@ -122,7 +115,8 @@ public class TimeShifterItem extends CatboxItem implements Listener {
 
             this.timeInputSignLocation = newSignLocation;
 
-            LoopHelper.runAfter(((6500L * 20L) / 1000L) / 20L, (task) -> player.openSign(sign, Side.FRONT));
+            long delay = ((6_500L * 20L) / 1_000L) / 20L;
+            LoopHelper.runAfter(delay, (task) -> player.openSign(sign, Side.FRONT));
             someoneAlreadyUsingItem = true;
 
             return true;

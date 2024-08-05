@@ -1,8 +1,8 @@
 package me.cat.catbox.impl.abstraction.item;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import me.cat.catbox.CatboxPlugin;
+import me.cat.catbox.helpers.NamespaceHelper;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -12,14 +12,8 @@ import java.util.Set;
 
 public abstract class CatboxItem implements Listener {
 
-    public static final NamespacedKey IS_CUSTOM_ITEM_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
-            "is_custom_item",
-            CatboxPlugin.get()
-    ));
-    public static final NamespacedKey CUSTOM_ITEM_ID_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
-            "custom_item_id",
-            CatboxPlugin.get()
-    ));
+    public static final NamespacedKey IS_CUSTOM_ITEM_TAG = NamespaceHelper.newSelfPluginTag("is_custom_item");
+    public static final NamespacedKey CUSTOM_ITEM_ID_TAG = NamespaceHelper.newSelfPluginTag("custom_item_id");
     private final CatboxItemBuilder builder;
     private final Set<Listener> hookedSelfListeners;
 

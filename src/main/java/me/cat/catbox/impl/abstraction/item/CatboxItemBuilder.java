@@ -2,7 +2,7 @@ package me.cat.catbox.impl.abstraction.item;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import me.cat.catbox.helpers.Helper;
+import me.cat.catbox.helpers.MiscHelper;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -116,7 +116,7 @@ public class CatboxItemBuilder {
         if (showCooldownLoreLine) {
             additionalLore.add(Component.empty());
             additionalLore.add(Component.text("Cooldown -> ", NamedTextColor.DARK_GRAY)
-                    .append(Component.text(Helper.formatDuration(useCooldown), NamedTextColor.YELLOW)));
+                    .append(Component.text(MiscHelper.formatDuration(useCooldown), NamedTextColor.YELLOW)));
         }
         additionalLore.add(Component.empty());
 

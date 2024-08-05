@@ -1,7 +1,7 @@
 package me.cat.catbox.impl.managers;
 
 import me.cat.catbox.CatboxPlugin;
-import me.cat.catbox.helpers.Helper;
+import me.cat.catbox.helpers.MiscHelper;
 import me.cat.catbox.impl.abstraction.item.CatboxItem;
 import me.cat.catbox.impl.abstraction.item.CatboxItemBuilder;
 import net.kyori.adventure.text.Component;
@@ -62,14 +62,14 @@ public class ItemUseListener implements Listener {
 
                                 UUID playerId = player.getUniqueId();
                                 if (cooldownManager.isCooldownOver(playerId, builder.useCooldown())) {
-                                    player.sendMessage(Helper.getActivatedMessageComponent(builder.displayName()));
+                                    player.sendMessage(MiscHelper.getActivatedMessageComponent(builder.displayName()));
                                     item.onUse(event);
                                     event.setCancelled(builder.shouldCancelUseInteraction());
 
                                     cooldownManager.removeFromCooldown(playerId);
                                     cooldownManager.addToCooldown(playerId);
                                 } else {
-                                    player.sendMessage(Helper.getCooldownMessageComponent(builder.displayName(), builder.useCooldown()));
+                                    player.sendMessage(MiscHelper.getCooldownMessageComponent(builder.displayName(), builder.useCooldown()));
                                     event.setCancelled(true);
                                 }
                             }

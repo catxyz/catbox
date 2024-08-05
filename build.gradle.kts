@@ -26,6 +26,10 @@ tasks {
     }
 }
 
+tasks.withType<JavaCompile> {
+    options.encoding = "utf-8"
+}
+
 tasks.withType(xyz.jpenilla.runtask.task.AbstractRun::class) {
     javaLauncher = javaToolchains.launcherFor {
         vendor = JvmVendorSpec.JETBRAINS

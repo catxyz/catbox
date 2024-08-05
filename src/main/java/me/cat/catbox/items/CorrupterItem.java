@@ -3,9 +3,9 @@ package me.cat.catbox.items;
 import com.destroystokyo.paper.MaterialSetTag;
 import com.destroystokyo.paper.MaterialTags;
 import com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent;
-import com.google.common.base.Preconditions;
 import me.cat.catbox.CatboxPlugin;
-import me.cat.catbox.helpers.Helper;
+import me.cat.catbox.helpers.MiscHelper;
+import me.cat.catbox.helpers.NamespaceHelper;
 import me.cat.catbox.impl.abstraction.item.CatboxItem;
 import me.cat.catbox.impl.abstraction.item.CatboxItemBuilder;
 import net.kyori.adventure.text.Component;
@@ -37,10 +37,7 @@ import java.util.stream.Stream;
 public class CorrupterItem extends CatboxItem implements Listener {
 
     private static final List<Material> CORRUPTED_MATERIALS;
-    private static final NamespacedKey CORRUPTER_TRIDENT_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
-            "corrupter_trident",
-            CatboxPlugin.get()
-    ));
+    private static final NamespacedKey CORRUPTER_TRIDENT_TAG = NamespaceHelper.newSelfPluginTag("corrupter_trident");
     private static final int DESPAWN_SECONDS = 6;
     private static final long DELAY_BETWEEN_EFFECT_SECONDS = 6L; // todo -> unused??
     private static final int MIN_RADIUS = 1;
@@ -158,13 +155,13 @@ public class CorrupterItem extends CatboxItem implements Listener {
 
                 if (tridentSecondsAlive.get() >= DESPAWN_SECONDS) {
                     returnTridentToPlayerIfNecessary(tridentEntity, player, () -> {
-                        Helper.removeEntitiesInStyle(Particle.SONIC_BOOM, 1, tridentEntity);
+                        MiscHelper.removeEntitiesInStyle(Particle.SONIC_BOOM, 1, tridentEntity);
                         task.cancel();
                     });
                 }
 
                 if (!player.isValid()) {
-                    Helper.removeEntitiesInStyle(Particle.SONIC_BOOM, 1, tridentEntity);
+                    MiscHelper.removeEntitiesInStyle(Particle.SONIC_BOOM, 1, tridentEntity);
                     task.cancel();
                 }
 
@@ -187,7 +184,7 @@ public class CorrupterItem extends CatboxItem implements Listener {
                     MaterialSetTag.TALL_FLOWERS.getValues().stream()
             ).toList();
 
-            Helper.createSurfaceLayer(
+            MiscHelper.createSurfaceLayer(
                     tridentWorld,
                     tridentEntity.getLocation(),
                     currentCorruptionRadius,
@@ -198,8 +195,8 @@ public class CorrupterItem extends CatboxItem implements Listener {
                                 .add(0.5d, 1.0d, 0.5d);
                         Block blockAbove = locAboveAffectedBlock.getBlock();
 
-                        if (Helper.chanceOfHappening(50)) {
-                            Material pickedFlower = Helper.randListElem(flowers);
+                        if (MiscHelper.chanceOfHappening(50)) {
+                            Material pickedFlower = MiscHelper.randListElem(flowers);
 
                             if (blockAbove.getType() == Material.AIR && !blockAbove.isLiquid()) {
                                 for (Player observer : Bukkit.getServer().getOnlinePlayers()) {
@@ -208,7 +205,7 @@ public class CorrupterItem extends CatboxItem implements Listener {
                             }
                         }
 
-                        if (Helper.chanceOfHappening(4)) {
+                        if (MiscHelper.chanceOfHappening(4)) {
                             tridentWorld.spawn(locAboveAffectedBlock, EvokerFangs.class, evokerFangs -> {
                                 evokerFangs.setOwner(player);
                                 tridentWorld.spawnParticle(Particle.SONIC_BOOM, evokerFangs.getLocation(), 1);
@@ -250,7 +247,7 @@ public class CorrupterItem extends CatboxItem implements Listener {
                 Component.text("Radius: ", NamedTextColor.YELLOW)
                         .append(Component.text(providedCorruptionRadius, NamedTextColor.WHITE)),
                 Component.text("Trailing effect: ", NamedTextColor.YELLOW)
-                        .append(Helper.enabledOrDisabled(trailingEffectToggled)),
+                        .append(MiscHelper.enabledOrDisabled(trailingEffectToggled)),
                 Component.empty(),
                 Component.text("(Left-click) to increase radius!", NamedTextColor.GREEN),
                 Component.text("(Sneak + Left-click) to decrease radius!", NamedTextColor.RED),
@@ -269,7 +266,7 @@ public class CorrupterItem extends CatboxItem implements Listener {
     private TextComponent getTrailingEffectToggleComponent(boolean trailingEffectToggled) {
         return Component.newline()
                 .append(Component.text("Trailing effect ", NamedTextColor.YELLOW)
-                        .append(Helper.enabledOrDisabled(trailingEffectToggled))
+                        .append(MiscHelper.enabledOrDisabled(trailingEffectToggled))
                         .appendNewline());
     }
 

@@ -1,7 +1,6 @@
 package me.cat.catbox.items.explosivetoybow;
 
-import com.google.common.base.Preconditions;
-import me.cat.catbox.CatboxPlugin;
+import me.cat.catbox.helpers.NamespaceHelper;
 import me.cat.catbox.impl.abstraction.item.CatboxItem;
 import me.cat.catbox.impl.abstraction.item.CatboxItemBuilder;
 import net.kyori.adventure.text.Component;
@@ -17,10 +16,7 @@ import java.util.List;
 
 public class ExplosiveToyBowItem extends CatboxItem implements Listener {
 
-    protected static final NamespacedKey EXPLOSIVE_ARROW_TAG = Preconditions.checkNotNull(NamespacedKey.fromString(
-            "explosive_arrow",
-            CatboxPlugin.get()
-    ));
+    protected static final NamespacedKey EXPLOSIVE_ARROW_TAG = NamespaceHelper.newSelfPluginTag("explosive_arrow");
     protected static final int DESPAWN_SECONDS = 4;
 
     public ExplosiveToyBowItem() {

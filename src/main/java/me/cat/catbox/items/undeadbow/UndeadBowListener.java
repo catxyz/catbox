@@ -1,7 +1,7 @@
 package me.cat.catbox.items.undeadbow;
 
-import me.cat.catbox.helpers.Helper;
 import me.cat.catbox.helpers.LoopHelper;
+import me.cat.catbox.helpers.MiscHelper;
 import me.cat.catbox.impl.abstraction.interfaces.EntityLifetimeLooper;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -20,6 +20,9 @@ public class UndeadBowListener implements Listener, EntityLifetimeLooper {
 
     @Override
     public void defineLifetimeFor(Entity... entities) {
+        if (entities.length == 0) {
+            return;
+        }
         WitherSkull witherSkull = (WitherSkull) entities[0];
 
         AtomicInteger witherSkullSecondsAlive = new AtomicInteger();
@@ -31,7 +34,7 @@ public class UndeadBowListener implements Listener, EntityLifetimeLooper {
                 task.cancel();
             }
             if (witherSkullSecondsAlive.get() >= UndeadBowItem.DESPAWN_SECONDS) {
-                Helper.removeEntitiesInStyle(Particle.SONIC_BOOM, 1, witherSkull);
+                MiscHelper.removeEntitiesInStyle(Particle.SONIC_BOOM, 1, witherSkull);
                 task.cancel();
             }
         });

@@ -2,8 +2,8 @@ package me.cat.catbox.items.passengerenderpearl;
 
 import com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent;
 import com.google.common.collect.Lists;
-import me.cat.catbox.helpers.Helper;
 import me.cat.catbox.helpers.LoopHelper;
+import me.cat.catbox.helpers.MiscHelper;
 import me.cat.catbox.impl.abstraction.interfaces.EntityLifetimeLooper;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -40,6 +40,9 @@ public class PassengerEnderPearlListener implements Listener, EntityLifetimeLoop
 
     @Override
     public void defineLifetimeFor(Entity... entities) {
+        if (entities.length == 0) {
+            return;
+        }
         EnderPearl enderPearl = (EnderPearl) entities[0];
 
         AtomicInteger ticksPassed = new AtomicInteger();
@@ -56,7 +59,7 @@ public class PassengerEnderPearlListener implements Listener, EntityLifetimeLoop
             }
 
             if (enderPearlSecondsAlive.get() >= PassengerEnderPearlItem.DESPAWN_SECONDS) {
-                Helper.removeEntitiesInStyle(Particle.SONIC_BOOM, 1, enderPearl);
+                MiscHelper.removeEntitiesInStyle(Particle.SONIC_BOOM, 1, enderPearl);
                 task.cancel();
             }
 
