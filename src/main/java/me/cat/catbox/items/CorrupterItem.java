@@ -90,7 +90,7 @@ public class CorrupterItem extends CatboxItem implements Listener {
         if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
             PlayerInventory playerInventory = player.getInventory();
             if (player.isSneaking()) {
-                if (player.getEyeLocation().getPitch() == -90.0f) {
+                if (player.getEyeLocation().getPitch() == -90f) {
                     trailingEffectToggled = !trailingEffectToggled;
                     player.sendMessage(getTrailingEffectToggleComponent(trailingEffectToggled));
                 } else {
@@ -192,7 +192,7 @@ public class CorrupterItem extends CatboxItem implements Listener {
                     true,
                     affectedBlocks -> affectedBlocks.forEach(block -> {
                         Location locAboveAffectedBlock = block.getLocation()
-                                .add(0.5d, 1.0d, 0.5d);
+                                .add(0.5, 1.0, 0.5);
                         Block blockAbove = locAboveAffectedBlock.getBlock();
 
                         if (MiscHelper.chanceOfHappening(50)) {

@@ -43,12 +43,12 @@ public class ColorStaffListener implements Listener, EntityLifetimeLooper, Custo
     @Override
     public void onCustomUse(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        shooter = player;
+        this.shooter = player;
 
         player.sendMessage(Component.text("Pew!", NamedTextColor.GRAY));
         player.playSound(player.getLocation(), Sound.ENTITY_CAT_AMBIENT, 10f, 1f);
 
-        player.getWorld().spawn(player.getEyeLocation().clone().subtract(0.0d, 0.2d, 0.0d), ArmorStand.class, armorStand -> {
+        player.getWorld().spawn(player.getEyeLocation().clone().subtract(0, 0.2, 0), ArmorStand.class, armorStand -> {
             armorStand.getPersistentDataContainer()
                     .set(SharedItemTags.CUSTOM_ARMOR_STAND_TAG, PersistentDataType.BOOLEAN, true);
 
@@ -66,7 +66,7 @@ public class ColorStaffListener implements Listener, EntityLifetimeLooper, Custo
 
                 Location armorStandLocation = armorStand.getLocation().clone();
                 Vector vec = armorStandLocation.getDirection();
-                armorStand.setHeadPose(armorStand.getHeadPose().add(0.0d, 1.0d, 0.0d));
+                armorStand.setHeadPose(armorStand.getHeadPose().add(0, 1, 0));
                 armorStand.teleport(armorStandLocation.add(vec));
             }, 0L, 1L);
             spawnFireworkOnGroundHit(armorStand);
@@ -94,7 +94,7 @@ public class ColorStaffListener implements Listener, EntityLifetimeLooper, Custo
             Location armorStandLocation = armorStand.getLocation();
 
             if (MiscHelper.isLooselyOnGround(armorStandLocation)) {
-                Location missLoc = armorStandLocation.clone().add(0.0d, 0.9d, 0.0d);
+                Location missLoc = armorStandLocation.clone().add(0, 0.9, 0);
                 spawnCustomFirework(armorStand.getWorld(), missLoc);
                 armorStand.remove();
                 task.cancel();
@@ -108,7 +108,7 @@ public class ColorStaffListener implements Listener, EntityLifetimeLooper, Custo
                 task.cancel();
             }
 
-            armorStand.getNearbyEntities(2.5d, 2.5d, 2.5d).stream()
+            armorStand.getNearbyEntities(2.5, 2.5, 2.5).stream()
                     .filter(entity -> entity instanceof LivingEntity)
                     .filter(entity -> !(entity instanceof ArmorStand))
                     .forEach(entity -> damageEntity(entity, entity.isValid()));
@@ -117,8 +117,9 @@ public class ColorStaffListener implements Listener, EntityLifetimeLooper, Custo
 
     private void damageEntity(Entity entity, boolean entityAlive) {
         if (entityAlive) {
-            double damageToDeal = ThreadLocalRandom.current().nextDouble(999.0d, 1_999.0d);
+            double damageToApply = ThreadLocalRandom.current().nextDouble(999, 2_000);
             LivingEntity livingEntity = (LivingEntity) entity;
+
             if (entity.getUniqueId() != shooter.getUniqueId()) {
                 livingEntity.setAI(false);
                 livingEntity.addPotionEffect(new PotionEffect(
@@ -129,9 +130,10 @@ public class ColorStaffListener implements Listener, EntityLifetimeLooper, Custo
                         true,
                         false
                 ));
-                livingEntity.damage(damageToDeal);
+
+                livingEntity.damage(damageToApply);
                 shooter.sendMessage(Component.text("You dealt ", NamedTextColor.GRAY)
-                        .append(Component.text(MiscHelper.formatNum(damageToDeal), NamedTextColor.RED))
+                        .append(Component.text(MiscHelper.formatNum(damageToApply), NamedTextColor.RED))
                         .append(Component.text(" damage to ", NamedTextColor.GRAY))
                         .append(Component.text(livingEntity.getName(), NamedTextColor.YELLOW))
                         .append(Component.text('!', NamedTextColor.GRAY)));
@@ -163,13 +165,13 @@ public class ColorStaffListener implements Listener, EntityLifetimeLooper, Custo
         firework.getPersistentDataContainer()
                 .set(SharedItemTags.USES_FIREWORKS_TAG, PersistentDataType.BOOLEAN, true);
 
-        firework.getNearbyEntities(2.5d, 2.5d, 2.5d).stream()
+        firework.getNearbyEntities(2.5, 2.5, 2.5).stream()
                 .filter(entity -> entity instanceof Player && entity.getUniqueId() != shooter.getUniqueId())
                 .forEach(playerEntity -> {
                     double x = playerEntity.getLocation().getDirection().getX();
                     double z = playerEntity.getLocation().getDirection().getZ();
 
-                    playerEntity.setVelocity(new Vector(-x, 0.7d, -z));
+                    playerEntity.setVelocity(new Vector(-x, 0.7, -z));
                 });
     }
 }

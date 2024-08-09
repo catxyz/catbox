@@ -1,6 +1,7 @@
 package me.cat.catbox.items;
 
 import me.cat.catbox.CatboxPlugin;
+import me.cat.catbox.helpers.LoopHelper;
 import me.cat.catbox.impl.abstraction.item.CatboxItem;
 import me.cat.catbox.impl.abstraction.item.CatboxItemBuilder;
 import net.kyori.adventure.text.Component;
@@ -8,7 +9,6 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -25,8 +25,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class MyPreciousItem extends CatboxItem {
 
+    private static final int SOUND_DELAY_FACTOR = 5;
     private boolean isSoundEffectPlaying = false;
-    private final int delayFactor = 5;
 
     public MyPreciousItem() {
         super(
@@ -61,10 +61,14 @@ public class MyPreciousItem extends CatboxItem {
             AtomicInteger soundDelay = new AtomicInteger(0);
             new BukkitRunnable() {
                 float pitch = 0f;
-                final TextComponent subtitle = Component.text("doesn't like you!", NamedTextColor.RED);
+                final TextComponent subtitle = Component.text("loves you!", NamedTextColor.LIGHT_PURPLE);
 
                 @Override
                 public void run() {
+                    if (!player.isValid()) {
+                        this.cancel();
+                    }
+
                     int randVillagerNameIndex = ThreadLocalRandom.current().nextInt(TestificateSpawnerItem.TESTIFICATE_NAMES.length);
                     String chosenVillager = TestificateSpawnerItem.TESTIFICATE_NAMES[randVillagerNameIndex];
 
@@ -79,16 +83,25 @@ public class MyPreciousItem extends CatboxItem {
                                 )
                         ));
 
-                        Bukkit.getServer().getScheduler().runTaskLater(CatboxPlugin.get(), () ->
-                                player.showTitle(Title.title(
-                                        Component.empty(),
-                                        Component.text("goodbye", NamedTextColor.GREEN),
-                                        Title.Times.times(
-                                                Duration.ZERO,
-                                                Duration.ofSeconds(1L),
-                                                Duration.ZERO
-                                        )
-                                )), (1_500L * 20L) / 1_000L);
+                        LoopHelper.runAfter((1_500L * 20L) / 1_000L, (task) -> player.showTitle(Title.title(
+                                Component.empty(),
+                                Component.text(":O", NamedTextColor.YELLOW),
+                                Title.Times.times(
+                                        Duration.ZERO,
+                                        Duration.ofSeconds(1L),
+                                        Duration.ZERO
+                                )
+                        )));
+
+                        LoopHelper.runAfter((1_500L * 20L) / 1_000L, (task) -> player.showTitle(Title.title(
+                                Component.empty(),
+                                Component.text(":O", NamedTextColor.YELLOW),
+                                Title.Times.times(
+                                        Duration.ZERO,
+                                        Duration.ofSeconds(1L),
+                                        Duration.ZERO
+                                )
+                        )));
 
                         player.addPotionEffect(new PotionEffect(
                                 PotionEffectType.LEVITATION,
@@ -98,9 +111,8 @@ public class MyPreciousItem extends CatboxItem {
                         ));
                         player.playSound(player.getLocation(), Sound.ENTITY_ILLUSIONER_CAST_SPELL, 10f, 0f);
 
-                        Bukkit.getServer().getScheduler().runTaskLater(CatboxPlugin.get(),
-                                () -> player.setHealth(0.0d),
-                                (3_000L * 20L) / 1_000L);
+                        LoopHelper.runAfter((3_000L * 20L) / 1_000L,
+                                (task) -> player.setHealth(0));
 
                         isSoundEffectPlaying = false;
                         this.cancel();
@@ -120,7 +132,7 @@ public class MyPreciousItem extends CatboxItem {
                         player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_TRADE, 10f, pitch);
                         pitch += 0.1f;
                     }
-                    soundDelay.getAndAdd(delayFactor);
+                    soundDelay.getAndAdd(SOUND_DELAY_FACTOR);
                 }
             }.runTaskTimer(CatboxPlugin.get(), 0L, 1L);
 
