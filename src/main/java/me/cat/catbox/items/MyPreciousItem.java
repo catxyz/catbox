@@ -141,6 +141,8 @@ public class MyPreciousItem extends CatboxItem {
 
     private void cancelTask(BukkitRunnable bukkitRunnable) {
         isSoundEffectPlaying = false;
-        bukkitRunnable.cancel();
+        if (bukkitRunnable != null) {
+            bukkitRunnable.cancel();
+        }
     }
 }

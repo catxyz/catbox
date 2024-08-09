@@ -97,7 +97,7 @@ public class MiscHelper {
     }
 
     public static void removeEntitiesInStyle(Particle particle, int count, Entity... entities) {
-        if (entities.length == 0) {
+        if (entities.length == 0 || LieDetectionHelper.arrayHasNull(entities)) {
             return;
         }
 

@@ -1,5 +1,6 @@
 package me.cat.catbox.items.explosivetoybow;
 
+import me.cat.catbox.helpers.LieDetectionHelper;
 import me.cat.catbox.helpers.LoopHelper;
 import me.cat.catbox.helpers.MiscHelper;
 import me.cat.catbox.impl.abstraction.interfaces.EntityLifetimeLooper;
@@ -33,7 +34,7 @@ public class ExplosiveToyBowListener implements Listener, EntityLifetimeLooper {
 
     @Override
     public void defineLifetimeFor(Entity... entities) {
-        if (entities.length == 0) {
+        if (entities.length == 0 || LieDetectionHelper.arrayHasNull(entities)) {
             return;
         }
         AbstractArrow arrow = (AbstractArrow) entities[0];

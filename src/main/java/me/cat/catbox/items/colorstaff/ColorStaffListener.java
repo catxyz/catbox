@@ -1,6 +1,7 @@
 package me.cat.catbox.items.colorstaff;
 
 import com.destroystokyo.paper.MaterialTags;
+import me.cat.catbox.helpers.LieDetectionHelper;
 import me.cat.catbox.helpers.LoopHelper;
 import me.cat.catbox.helpers.MiscHelper;
 import me.cat.catbox.impl.abstraction.interfaces.CustomUseInteraction;
@@ -37,13 +38,13 @@ public class ColorStaffListener implements Listener, EntityLifetimeLooper, Custo
 
     @Override
     public void defineLifetimeFor(Entity... entities) {
-        if (entities.length == 0) {
+        if (entities.length == 0 || LieDetectionHelper.arrayHasNull(entities)) {
             return;
         }
-
         ArmorStand armorStand = (ArmorStand) entities[0];
 
         AtomicInteger armorStandSecondsAlive = new AtomicInteger();
+
         LoopHelper.runIndefinitely(0L, 20L, (task) -> {
             armorStandSecondsAlive.getAndIncrement();
 
@@ -62,7 +63,7 @@ public class ColorStaffListener implements Listener, EntityLifetimeLooper, Custo
     @Override
     public void onCustomUse(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        this.shooter = player;
+        this.shooter = player; // todo
 
         player.sendMessage(Component.text("Pew!", NamedTextColor.GRAY));
         player.playSound(player.getLocation(), Sound.ENTITY_CAT_AMBIENT, 10f, 1f);

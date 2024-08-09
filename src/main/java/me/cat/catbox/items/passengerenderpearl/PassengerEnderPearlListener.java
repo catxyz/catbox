@@ -2,6 +2,7 @@ package me.cat.catbox.items.passengerenderpearl;
 
 import com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent;
 import com.google.common.collect.Lists;
+import me.cat.catbox.helpers.LieDetectionHelper;
 import me.cat.catbox.helpers.LoopHelper;
 import me.cat.catbox.helpers.MiscHelper;
 import me.cat.catbox.impl.abstraction.interfaces.EntityLifetimeLooper;
@@ -40,7 +41,7 @@ public class PassengerEnderPearlListener implements Listener, EntityLifetimeLoop
 
     @Override
     public void defineLifetimeFor(Entity... entities) {
-        if (entities.length == 0) {
+        if (entities.length == 0 || LieDetectionHelper.arrayHasNull(entities)) {
             return;
         }
         EnderPearl enderPearl = (EnderPearl) entities[0];
