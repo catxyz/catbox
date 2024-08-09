@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MyPreciousItem extends CatboxItem {
 
     private static final int SOUND_DELAY_FACTOR = 5;
-    private boolean isSoundEffectPlaying = false;
+    private boolean isSoundEffectPlaying = false; // todo
 
     public MyPreciousItem() {
         super(
@@ -59,6 +59,7 @@ public class MyPreciousItem extends CatboxItem {
 
         if (!isSoundEffectPlaying) {
             AtomicInteger soundDelay = new AtomicInteger(0);
+
             new BukkitRunnable() {
                 float pitch = 0f;
                 final TextComponent subtitle = Component.text("loves you!", NamedTextColor.LIGHT_PURPLE);
@@ -66,7 +67,7 @@ public class MyPreciousItem extends CatboxItem {
                 @Override
                 public void run() {
                     if (!player.isValid()) {
-                        this.cancel();
+                        cancelTask(this);
                     }
 
                     int randVillagerNameIndex = ThreadLocalRandom.current().nextInt(TestificateSpawnerItem.TESTIFICATE_NAMES.length);
@@ -111,11 +112,9 @@ public class MyPreciousItem extends CatboxItem {
                         ));
                         player.playSound(player.getLocation(), Sound.ENTITY_ILLUSIONER_CAST_SPELL, 10f, 0f);
 
-                        LoopHelper.runAfter((3_000L * 20L) / 1_000L,
-                                (task) -> player.setHealth(0));
+                        LoopHelper.runAfter((3_000L * 20L) / 1_000L, (task) -> player.setHealth(0));
 
-                        isSoundEffectPlaying = false;
-                        this.cancel();
+                        cancelTask(this);
                     }
                     if (soundDelay.get() % 20 == 0) {
                         player.showTitle(Title.title(
@@ -138,5 +137,10 @@ public class MyPreciousItem extends CatboxItem {
 
             isSoundEffectPlaying = true;
         }
+    }
+
+    private void cancelTask(BukkitRunnable bukkitRunnable) {
+        isSoundEffectPlaying = false;
+        bukkitRunnable.cancel();
     }
 }

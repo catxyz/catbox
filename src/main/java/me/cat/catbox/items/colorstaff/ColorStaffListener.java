@@ -1,7 +1,7 @@
 package me.cat.catbox.items.colorstaff;
 
 import com.destroystokyo.paper.MaterialTags;
-import me.cat.catbox.CatboxPlugin;
+import me.cat.catbox.helpers.LoopHelper;
 import me.cat.catbox.helpers.MiscHelper;
 import me.cat.catbox.impl.abstraction.interfaces.CustomUseInteraction;
 import me.cat.catbox.impl.abstraction.interfaces.EntityLifetimeLooper;
@@ -37,7 +37,26 @@ public class ColorStaffListener implements Listener, EntityLifetimeLooper, Custo
 
     @Override
     public void defineLifetimeFor(Entity... entities) {
-        // todo
+        if (entities.length == 0) {
+            return;
+        }
+
+        ArmorStand armorStand = (ArmorStand) entities[0];
+
+        AtomicInteger armorStandSecondsAlive = new AtomicInteger();
+        LoopHelper.runIndefinitely(0L, 20L, (task) -> {
+            armorStandSecondsAlive.getAndIncrement();
+
+            if (!armorStand.isValid()) {
+                task.cancel();
+            }
+
+            if (armorStandSecondsAlive.get() >= ColorStaffItem.DESPAWN_SECONDS) {
+                spawnCustomFirework(armorStand.getWorld(), armorStand.getLocation());
+                armorStand.remove();
+                task.cancel();
+            }
+        });
     }
 
     @Override
@@ -59,7 +78,7 @@ public class ColorStaffListener implements Listener, EntityLifetimeLooper, Custo
             armorStand.getEquipment()
                     .setHelmet(randomHeadColor);
 
-            Bukkit.getServer().getScheduler().runTaskTimer(CatboxPlugin.get(), (task) -> {
+            LoopHelper.runIndefinitely(0L, 1L, (task) -> {
                 if (!armorStand.isValid()) {
                     task.cancel();
                 }
@@ -68,29 +87,20 @@ public class ColorStaffListener implements Listener, EntityLifetimeLooper, Custo
                 Vector vec = armorStandLocation.getDirection();
                 armorStand.setHeadPose(armorStand.getHeadPose().add(0, 1, 0));
                 armorStand.teleport(armorStandLocation.add(vec));
-            }, 0L, 1L);
-            spawnFireworkOnGroundHit(armorStand);
+            });
 
+            spawnFireworkIfGroundHit(armorStand);
             runKillEntitiesAroundArmorStandTask(armorStand);
-
-            AtomicInteger armorStandSecondsAlive = new AtomicInteger();
-            Bukkit.getServer().getScheduler().runTaskTimer(CatboxPlugin.get(), (task) -> {
-                if (!armorStand.isValid()) {
-                    task.cancel();
-                }
-                armorStandSecondsAlive.getAndIncrement();
-
-                if (armorStandSecondsAlive.get() >= ColorStaffItem.DESPAWN_SECONDS) {
-                    spawnCustomFirework(armorStand.getWorld(), armorStand.getLocation());
-                    armorStand.remove();
-                    task.cancel();
-                }
-            }, 0L, 20L);
+            defineLifetimeFor(armorStand);
         });
     }
 
-    private void spawnFireworkOnGroundHit(ArmorStand armorStand) {
-        Bukkit.getServer().getScheduler().runTaskTimer(CatboxPlugin.get(), (task) -> {
+    private void spawnFireworkIfGroundHit(ArmorStand armorStand) {
+        LoopHelper.runIndefinitely(0L, 2L, (task) -> {
+            if (!armorStand.isValid()) {
+                task.cancel();
+            }
+
             Location armorStandLocation = armorStand.getLocation();
 
             if (MiscHelper.isLooselyOnGround(armorStandLocation)) {
@@ -99,11 +109,11 @@ public class ColorStaffListener implements Listener, EntityLifetimeLooper, Custo
                 armorStand.remove();
                 task.cancel();
             }
-        }, 0L, 2L);
+        });
     }
 
     private void runKillEntitiesAroundArmorStandTask(ArmorStand armorStand) {
-        Bukkit.getServer().getScheduler().runTaskTimer(CatboxPlugin.get(), (task) -> {
+        LoopHelper.runIndefinitely(0L, 10L, (task) -> {
             if (!armorStand.isValid()) {
                 task.cancel();
             }
@@ -112,7 +122,7 @@ public class ColorStaffListener implements Listener, EntityLifetimeLooper, Custo
                     .filter(entity -> entity instanceof LivingEntity)
                     .filter(entity -> !(entity instanceof ArmorStand))
                     .forEach(entity -> damageEntity(entity, entity.isValid()));
-        }, 0L, 10L);
+        });
     }
 
     private void damageEntity(Entity entity, boolean entityAlive) {

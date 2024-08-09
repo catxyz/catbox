@@ -135,7 +135,7 @@ public class PassengerEnderPearlListener implements Listener, EntityLifetimeLoop
                         event.setCancelled(true);
 
                         player.getOpenInventory().setCursor(null);
-                        player.getInventory().addItem(passengerEnderPearlItem.getSelfItemStack());
+                        player.getInventory().addItem(passengerEnderPearlItem.getPristineSelfItemStack());
                     }
                 }
             }
@@ -152,7 +152,7 @@ public class PassengerEnderPearlListener implements Listener, EntityLifetimeLoop
                     if (offHandItem.getItemMeta().getPersistentDataContainer()
                             .has(PassengerEnderPearlItem.IS_PASSENGER_ENDER_PEARL_TAG)) {
                         playerInventory.setItemInOffHand(null);
-                        playerInventory.addItem(passengerEnderPearlItem.getSelfItemStack());
+                        playerInventory.addItem(passengerEnderPearlItem.getPristineSelfItemStack());
                     }
                 }
             }

@@ -37,7 +37,9 @@ public abstract class CatboxItem implements Listener {
         plugin.registerEvents(hookedSelfListeners.toArray(new Listener[0]));
     }
 
-    public ItemStack getSelfItemStack() {
+    // rebuilds this ItemStack using its provided
+    // builder at init @ CatboxItemManager.registerItems()
+    public ItemStack getPristineSelfItemStack() {
         return builder().toItemStack();
     }
 

@@ -225,7 +225,7 @@ public class CorrupterItem extends CatboxItem implements Listener {
         if (!tridentEntity.isOnGround() || !tridentEntity.isValid()) {
             GameMode playerGameMode = player.getGameMode();
             if (playerGameMode == GameMode.SURVIVAL || playerGameMode == GameMode.ADVENTURE) {
-                ItemStack newTrident = getSelfItemStack();
+                ItemStack newTrident = getPristineSelfItemStack();
 
                 PlayerInventory playerInventory = player.getInventory();
                 if (!playerInventory.contains(newTrident)) {
