@@ -1,9 +1,10 @@
-package me.cat.catbox.items;
+package me.cat.catbox.items.beta;
 
 import me.cat.catbox.CatboxPlugin;
 import me.cat.catbox.helpers.LoopHelper;
 import me.cat.catbox.impl.abstraction.item.CatboxItem;
 import me.cat.catbox.impl.abstraction.item.CatboxItemBuilder;
+import me.cat.catbox.items.stable.TestificateSpawnerItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -43,6 +44,7 @@ public class MyPreciousItem extends CatboxItem {
                                 Component.text("They stole it from us.", NamedTextColor.GRAY, TextDecoration.ITALIC),
                                 Component.text("Master betrayed us.", NamedTextColor.GRAY, TextDecoration.ITALIC)
                         ))
+                        .markedAsBeta(true)
         );
     }
 

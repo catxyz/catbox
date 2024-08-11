@@ -1,4 +1,4 @@
-package me.cat.catbox.items.portal;
+package me.cat.catbox.items.beta.portal;
 
 import com.google.common.collect.Maps;
 import me.cat.catbox.helpers.LoopHelper;
@@ -107,6 +107,8 @@ public class PortalListener implements Listener {
         mappedPlayerAndEntity.remove(playerId);
     }
 
+    // todo -> rewrite this class to be more persistent
+    //  and to manage states properly
     public void pickUpEntity(Player player, Entity entity) {
         UUID entityId = entity.getUniqueId();
 
@@ -156,9 +158,7 @@ public class PortalListener implements Listener {
         if (player == null || entity == null) {
             return;
         }
-        if (!player.isValid() || !entity.isValid()) {
-            return;
-        }
+
         UUID playerId = player.getUniqueId();
         UUID entityId = entity.getUniqueId();
 

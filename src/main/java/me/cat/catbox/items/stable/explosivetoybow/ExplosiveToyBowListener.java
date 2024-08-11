@@ -1,4 +1,4 @@
-package me.cat.catbox.items.explosivetoybow;
+package me.cat.catbox.items.stable.explosivetoybow;
 
 import me.cat.catbox.helpers.LieDetectionHelper;
 import me.cat.catbox.helpers.LoopHelper;

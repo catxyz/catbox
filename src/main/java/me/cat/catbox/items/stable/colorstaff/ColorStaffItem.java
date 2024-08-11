@@ -1,10 +1,12 @@
-package me.cat.catbox.items.colorstaff;
+package me.cat.catbox.items.stable.colorstaff;
 
 import me.cat.catbox.helpers.MiscHelper;
+import me.cat.catbox.helpers.NamespaceHelper;
 import me.cat.catbox.impl.abstraction.item.CatboxItem;
 import me.cat.catbox.impl.abstraction.item.CatboxItemBuilder;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -13,6 +15,7 @@ import java.util.List;
 
 public class ColorStaffItem extends CatboxItem {
 
+    protected static final NamespacedKey ID_OF_USER_TAG = NamespaceHelper.newSelfPluginTag("id_of_user");
     protected static final int DESPAWN_SECONDS = 3;
     private final ColorStaffListener colorStaffListener;
 

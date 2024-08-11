@@ -1,4 +1,4 @@
-package me.cat.catbox.items.passengerenderpearl;
+package me.cat.catbox.items.stable.passengerenderpearl;
 
 import me.cat.catbox.helpers.NamespaceHelper;
 import me.cat.catbox.impl.abstraction.item.CatboxItem;

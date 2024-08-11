@@ -1,4 +1,4 @@
-package me.cat.catbox.items;
+package me.cat.catbox.items.beta;
 
 import com.destroystokyo.paper.MaterialTags;
 import me.cat.catbox.helpers.LieDetectionHelper;
@@ -58,6 +58,7 @@ public class TimeShifterItem extends CatboxItem implements Listener {
                                 Component.empty(),
                                 Component.text("About time!", NamedTextColor.GRAY)
                         ))
+                        .markedAsBeta(true)
         );
     }
 

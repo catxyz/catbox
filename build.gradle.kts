@@ -16,13 +16,13 @@ repositories {
 }
 
 dependencies {
-    implementation("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
+    implementation("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
     implementation("com.comphenix.protocol:ProtocolLib:5.1.0")
 }
 
 tasks {
     runServer {
-        minecraftVersion("1.21")
+        minecraftVersion("1.21.1")
     }
 }
 

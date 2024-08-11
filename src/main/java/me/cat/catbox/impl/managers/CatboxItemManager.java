@@ -8,13 +8,18 @@ import me.cat.catbox.impl.abstraction.item.CatboxItem;
 import me.cat.catbox.impl.abstraction.item.CatboxItemBuilder;
 import me.cat.catbox.impl.abstraction.sharedlisteners.ArmorStandManipulateListener;
 import me.cat.catbox.impl.abstraction.sharedlisteners.FireworkDamageListener;
-import me.cat.catbox.items.*;
-import me.cat.catbox.items.amaceing.AmaceingItem;
-import me.cat.catbox.items.colorstaff.ColorStaffItem;
-import me.cat.catbox.items.explosivetoybow.ExplosiveToyBowItem;
-import me.cat.catbox.items.passengerenderpearl.PassengerEnderPearlItem;
-import me.cat.catbox.items.portal.PortalItem;
-import me.cat.catbox.items.undeadbow.UndeadBowItem;
+import me.cat.catbox.items.beta.CorrupterItem;
+import me.cat.catbox.items.beta.MyPreciousItem;
+import me.cat.catbox.items.beta.TimeShifterItem;
+import me.cat.catbox.items.beta.portal.PortalItem;
+import me.cat.catbox.items.stable.EverythingPotionItem;
+import me.cat.catbox.items.stable.TestItem;
+import me.cat.catbox.items.stable.TestificateSpawnerItem;
+import me.cat.catbox.items.stable.amaceing.AmaceingItem;
+import me.cat.catbox.items.stable.colorstaff.ColorStaffItem;
+import me.cat.catbox.items.stable.explosivetoybow.ExplosiveToyBowItem;
+import me.cat.catbox.items.stable.passengerenderpearl.PassengerEnderPearlItem;
+import me.cat.catbox.items.stable.undeadbow.UndeadBowItem;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -83,21 +88,35 @@ public class CatboxItemManager {
         return null;
     }
 
-    public void giveAllItems(Player player) {
-        mappedItemIdAndStack.forEach((itemId, itemStack) -> {
-            player.sendMessage(MiscHelper.getGiveItemMessageComponent(itemId, player.getName()));
-            player.getInventory().addItem(itemStack);
-        });
+    public void giveAllStableItems(Player player) {
+        registeredItems.stream()
+                .filter(item -> !item.builder().markedAsBeta())
+                .forEach(item -> giveStableOrBeta(player, item.builder()));
+    }
+
+    public void giveAllBetaItems(Player player) {
+        registeredItems.stream()
+                .filter(item -> item.builder().markedAsBeta())
+                .forEach(item -> giveStableOrBeta(player, item.builder()));
+    }
+
+    private void giveStableOrBeta(Player player, CatboxItemBuilder builder) {
+        player.sendMessage(MiscHelper.getGiveItemMessageComponent(builder.itemId(), player.getName()));
+        player.getInventory().addItem(builder.toItemStack());
     }
 
     public void addItem(CatboxItem item) {
+        CatboxItemBuilder builder = item.builder();
+
         if (!isItemRegistered(item)) {
             registeredItems.add(item);
 
             item.loadAdditionalItemData();
             item.registerHookedSelfListeners(plugin);
 
-            plugin.getLogger().info("-> '" + item.builder().itemId() + "' registered!");
+            plugin.getLogger().info("-> '" + builder.itemId() + '\''
+                    + (builder.markedAsBeta() ? " (beta)" : "")
+                    + " registered!");
         }
     }
 

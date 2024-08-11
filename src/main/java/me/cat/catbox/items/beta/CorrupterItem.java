@@ -1,4 +1,4 @@
-package me.cat.catbox.items;
+package me.cat.catbox.items.beta;
 
 import com.destroystokyo.paper.MaterialSetTag;
 import com.destroystokyo.paper.MaterialTags;
@@ -79,6 +79,7 @@ public class CorrupterItem extends CatboxItem implements Listener {
                                 currentCorruptionRadius,
                                 trailingEffectToggled
                         ))
+                        .markedAsBeta(true)
         );
     }
 

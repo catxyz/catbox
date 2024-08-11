@@ -1,4 +1,4 @@
-package me.cat.catbox.items;
+package me.cat.catbox.items.stable;
 
 import me.cat.catbox.impl.abstraction.item.CatboxItem;
 import me.cat.catbox.impl.abstraction.item.CatboxItemBuilder;
@@ -57,7 +57,7 @@ public class TestificateSpawnerItem extends CatboxItem {
         Player player = event.getPlayer();
 
         int rgbLimit = 255;
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 20; i++) {
             String currentRandomName = TESTIFICATE_NAMES[ThreadLocalRandom.current().nextInt(TESTIFICATE_NAMES.length)];
             TextColor currentRandomColor = TextColor.color(
                     ThreadLocalRandom.current().nextInt(rgbLimit),

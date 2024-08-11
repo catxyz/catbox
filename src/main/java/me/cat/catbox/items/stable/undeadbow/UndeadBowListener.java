@@ -1,4 +1,4 @@
-package me.cat.catbox.items.undeadbow;
+package me.cat.catbox.items.stable.undeadbow;
 
 import me.cat.catbox.helpers.LieDetectionHelper;
 import me.cat.catbox.helpers.LoopHelper;

@@ -1,4 +1,4 @@
-package me.cat.catbox.items.passengerenderpearl;
+package me.cat.catbox.items.stable.passengerenderpearl;
 
 import com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent;
 import com.google.common.collect.Lists;

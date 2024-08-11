@@ -1,4 +1,4 @@
-package me.cat.catbox.items.portal;
+package me.cat.catbox.items.beta.portal;
 
 import me.cat.catbox.helpers.NamespaceHelper;
 import me.cat.catbox.impl.abstraction.item.CatboxItem;
@@ -34,6 +34,7 @@ public class PortalItem extends CatboxItem {
                                 Component.text("\uD83C\uDF82", NamedTextColor.YELLOW)
                         ))
                         .cancelUseInteraction(true)
+                        .markedAsBeta(true)
         );
     }
 

@@ -8,6 +8,7 @@ import me.cat.catbox.impl.managers.CatboxItemManager;
 import me.cat.catbox.impl.managers.CooldownManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -69,7 +70,7 @@ public class CatboxPlugin extends JavaPlugin implements Listener {
             }
         });
 
-        this.getServer().getCommandMap().register(COMMAND_FALLBACK_PREFIX, new Command("giveAllCustomItems") {
+        this.getServer().getCommandMap().register(COMMAND_FALLBACK_PREFIX, new Command("giveAllStableItems") {
             @Override
             public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
                 if (!(sender instanceof Player player)) return false;
@@ -78,22 +79,8 @@ public class CatboxPlugin extends JavaPlugin implements Listener {
                     return false;
                 }
 
-                if (args.length == 1) {
-                    Player targetPlayer = Bukkit.getPlayerExact(args[0]);
-                    if (targetPlayer == null) {
-                        player.sendMessage(Component.text("Invalid target player!", NamedTextColor.RED));
-                    } else {
-                        player.sendMessage(Component.text("Gave all items to player ", NamedTextColor.GREEN)
-                                .append(targetPlayer.name().color(NamedTextColor.YELLOW))
-                                .append(Component.text('!', NamedTextColor.GREEN)));
+                giveAllStableOrBetaItems(player, args, false);
 
-                        targetPlayer.getInventory().clear();
-                        catboxItemManager.giveAllItems(targetPlayer);
-                    }
-                } else {
-                    player.getInventory().clear();
-                    catboxItemManager.giveAllItems(player);
-                }
                 return true;
             }
 
@@ -106,7 +93,7 @@ public class CatboxPlugin extends JavaPlugin implements Listener {
             }
         });
 
-        this.getServer().getCommandMap().register(COMMAND_FALLBACK_PREFIX, new Command("giveCustomItem") {
+        this.getServer().getCommandMap().register(COMMAND_FALLBACK_PREFIX, new Command("giveAllBetaItems") {
             @Override
             public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
                 if (!(sender instanceof Player player)) return false;
@@ -115,20 +102,30 @@ public class CatboxPlugin extends JavaPlugin implements Listener {
                     return false;
                 }
 
-                if (args.length != 1) {
-                    player.sendMessage(Component.text("Usage -> /" + commandLabel + " <item_id>", NamedTextColor.RED));
+                giveAllStableOrBetaItems(player, args, true);
+
+                return true;
+            }
+
+            @Override
+            public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
+                return Bukkit.getServer().getOnlinePlayers()
+                        .stream()
+                        .map(Player::getName)
+                        .toList();
+            }
+        });
+
+        this.getServer().getCommandMap().register(COMMAND_FALLBACK_PREFIX, new Command("giveStableItem") {
+            @Override
+            public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
+                if (!(sender instanceof Player player)) return false;
+                if (!sender.isOp()) {
+                    player.sendMessage(UNABLE_USE_COMMAND_COMPONENT);
                     return false;
                 }
 
-                String itemId = args[0];
-                ItemStack itemToGive = catboxItemManager.getItemStackById(itemId);
-                if (itemToGive == null) {
-                    player.sendMessage(Component.text("Invalid <item_id>!", NamedTextColor.RED));
-                    return false;
-                } else {
-                    player.sendMessage(MiscHelper.getGiveItemMessageComponent(itemId, player.getName()));
-                    player.getInventory().addItem(itemToGive);
-                }
+                giveStableOrBetaItem(player, commandLabel, args);
 
                 return true;
             }
@@ -138,6 +135,34 @@ public class CatboxPlugin extends JavaPlugin implements Listener {
                 if (sender.isOp()) {
                     return catboxItemManager.getRegisteredItems()
                             .stream()
+                            .filter(item -> !item.builder().markedAsBeta())
+                            .map(item -> item.builder().itemId())
+                            .toList();
+                }
+                return List.of();
+            }
+        });
+
+        this.getServer().getCommandMap().register(COMMAND_FALLBACK_PREFIX, new Command("giveBetaItem") {
+            @Override
+            public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
+                if (!(sender instanceof Player player)) return false;
+                if (!sender.isOp()) {
+                    player.sendMessage(UNABLE_USE_COMMAND_COMPONENT);
+                    return false;
+                }
+
+                giveStableOrBetaItem(player, commandLabel, args);
+
+                return true;
+            }
+
+            @Override
+            public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
+                if (sender.isOp()) {
+                    return catboxItemManager.getRegisteredItems()
+                            .stream()
+                            .filter(item -> item.builder().markedAsBeta())
                             .map(item -> item.builder().itemId())
                             .toList();
                 }
@@ -208,6 +233,53 @@ public class CatboxPlugin extends JavaPlugin implements Listener {
                 return true;
             }
         });
+    }
+
+    private void giveAllStableOrBetaItems(Player player, String[] args, boolean beta) {
+        if (args.length == 1) {
+            Player targetPlayer = Bukkit.getPlayerExact(args[0]);
+            if (targetPlayer == null) {
+                player.sendMessage(Component.text("Invalid target player!", NamedTextColor.RED));
+            } else {
+                Component betaHint = Component.text("(beta) ", NamedTextColor.LIGHT_PURPLE, TextDecoration.ITALIC);
+
+                player.sendMessage(Component.text("Gave all ", NamedTextColor.GREEN)
+                        .append(beta ? betaHint : Component.empty())
+                        .append(Component.text("items to player ", NamedTextColor.GREEN))
+                        .append(targetPlayer.name().color(NamedTextColor.YELLOW))
+                        .append(Component.text('!', NamedTextColor.GREEN)));
+
+                targetPlayer.getInventory().clear();
+                giveAll(player, beta);
+            }
+        } else {
+            player.getInventory().clear();
+            giveAll(player, beta);
+        }
+    }
+
+    private void giveAll(Player player, boolean beta) {
+        if (beta) {
+            catboxItemManager.giveAllBetaItems(player);
+        } else {
+            catboxItemManager.giveAllStableItems(player);
+        }
+    }
+
+    private void giveStableOrBetaItem(Player player, String commandLabel, String[] args) {
+        if (args.length != 1) {
+            player.sendMessage(Component.text("Usage -> /" + commandLabel + " <item_id>", NamedTextColor.RED));
+            return;
+        }
+
+        String itemId = args[0];
+        ItemStack itemToGive = catboxItemManager.getItemStackById(itemId);
+        if (itemToGive == null) {
+            player.sendMessage(Component.text("Invalid <item_id>!", NamedTextColor.RED));
+        } else {
+            player.sendMessage(MiscHelper.getGiveItemMessageComponent(itemId, player.getName()));
+            player.getInventory().addItem(itemToGive);
+        }
     }
 
     public void registerEvents(Listener... listeners) {

@@ -1,4 +1,4 @@
-package me.cat.catbox.items.undeadbow;
+package me.cat.catbox.items.stable.undeadbow;
 
 import me.cat.catbox.helpers.NamespaceHelper;
 import me.cat.catbox.impl.abstraction.item.CatboxItem;

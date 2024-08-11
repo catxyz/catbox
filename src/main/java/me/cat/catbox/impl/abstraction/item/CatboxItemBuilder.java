@@ -39,6 +39,7 @@ public class CatboxItemBuilder {
     private Duration useCooldown = Duration.ZERO;
     private boolean showCooldownLoreLine = true;
     private boolean cancelUseInteraction = false;
+    private boolean markedAsBeta = false;
 
     public CatboxItemBuilder useActions(List<Action> useActions) {
         this.useActions = useActions;
@@ -100,6 +101,11 @@ public class CatboxItemBuilder {
 
     public CatboxItemBuilder cancelUseInteraction(boolean cancelUseInteraction) {
         this.cancelUseInteraction = cancelUseInteraction;
+        return this;
+    }
+
+    public CatboxItemBuilder markedAsBeta(boolean markedAsBeta) {
+        this.markedAsBeta = markedAsBeta;
         return this;
     }
 
@@ -193,5 +199,9 @@ public class CatboxItemBuilder {
 
     public boolean shouldCancelUseInteraction() {
         return cancelUseInteraction;
+    }
+
+    public boolean markedAsBeta() {
+        return markedAsBeta;
     }
 }

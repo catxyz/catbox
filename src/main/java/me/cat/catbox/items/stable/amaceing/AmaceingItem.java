@@ -1,4 +1,4 @@
-package me.cat.catbox.items.amaceing;
+package me.cat.catbox.items.stable.amaceing;
 
 import me.cat.catbox.helpers.NamespaceHelper;
 import me.cat.catbox.impl.abstraction.item.CatboxItem;
@@ -21,9 +21,9 @@ import java.util.List;
 
 public class AmaceingItem extends CatboxItem {
 
-    private static final NamespacedKey NUMBER_CHARGES_STORED_TAG = NamespaceHelper.newSelfPluginTag("number_stored_charges");
+    private static final NamespacedKey STORED_CHARGES_TAG = NamespaceHelper.newSelfPluginTag("stored_charges");
     private static final NamespacedKey RECHARGING_TAG = NamespaceHelper.newSelfPluginTag("recharging");
-    private static final int DEFAULT_CHARGES_NUM = 2;
+    private static final int DEFAULT_CHARGES_NUMBER = 2;
     private static final Component DISPLAY_NAME_COMPONENT = Component.text('A', NamedTextColor.LIGHT_PURPLE)
             .append(Component.text("mace", NamedTextColor.LIGHT_PURPLE, TextDecoration.ITALIC))
             .append(Component.text("ing", NamedTextColor.LIGHT_PURPLE));
@@ -38,7 +38,7 @@ public class AmaceingItem extends CatboxItem {
                         .itemId("amaceing")
                         .useCooldown(Duration.ofMillis(360L))
                         .material(Material.MACE)
-                        .insertData(NUMBER_CHARGES_STORED_TAG, PersistentDataType.INTEGER, DEFAULT_CHARGES_NUM)
+                        .insertData(STORED_CHARGES_TAG, PersistentDataType.INTEGER, DEFAULT_CHARGES_NUMBER)
                         .insertData(RECHARGING_TAG, PersistentDataType.BOOLEAN, false)
                         .displayName(DISPLAY_NAME_COMPONENT)
                         .lore(List.of(

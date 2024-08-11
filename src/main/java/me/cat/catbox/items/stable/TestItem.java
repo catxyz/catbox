@@ -1,4 +1,4 @@
-package me.cat.catbox.items;
+package me.cat.catbox.items.stable;
 
 import me.cat.catbox.impl.abstraction.item.CatboxItem;
 import me.cat.catbox.impl.abstraction.item.CatboxItemBuilder;
